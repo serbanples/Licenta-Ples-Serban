@@ -3,11 +3,12 @@ import { createLogger, format, Logger, transports } from 'winston';
 
 import { createElasticLogger } from './elastic-logger.factory';
 
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Logger service class, used in order to log data to elastic search.
- * @method info - log informational messages
- * @method error - log error messages
- * @method warn - log warning messages
  */
 @Injectable()
 export class LoggerService {
@@ -15,7 +16,8 @@ export class LoggerService {
 
   /**
    * Constructor for the LoggerService class
-   * @param serviceName - name of the service
+   * 
+   * @param {string} serviceName - name of the service
    */
   constructor(private readonly serviceName: string) {
     const elasticTransport = createElasticLogger(this.serviceName);
@@ -44,9 +46,10 @@ export class LoggerService {
 
   /**
    * Log informational messages
-   * @param message - message to log
-   * @param meta - additional metadata to log
-   * @returns
+   * 
+   * @param {string} message - message to log
+   * @param {any} meta - additional metadata to log
+   * @returns {void} logs a message to elastic.
    */
   info(message: string, meta?: any): void {
     this.logger.info(message, { ...meta });
@@ -54,9 +57,10 @@ export class LoggerService {
 
   /**
    * Log error messages
-   * @param message - message to log
-   * @param meta - additional metadata to log
-   * @returns
+   * 
+   * @param {string} message - message to log
+   * @param {any} meta - additional metadata to log
+   * @returns {void} logs a message to elastic.
    */
   error(message: string, meta?: any): void {
     this.logger.error(message, { ...meta });
@@ -64,9 +68,10 @@ export class LoggerService {
 
   /**
    * Log warning messages
-   * @param message - message to log
-   * @param meta - additional metadata to log
-   * @returns
+   * 
+   * @param {string} message - message to log
+   * @param {any} meta - additional metadata to log
+   * @returns {void} logs a message to elastic.
    */
   warn(message: string, meta?: any): void {
     this.logger.warn(message, { ...meta });

@@ -11,8 +11,9 @@ export class LoggerMiddleware implements NestMiddleware {
   private readonly logger: LoggerService;
 
   /**
-   *
-   * @param logger
+   * Constructor method
+   * 
+   * @param {LoggerService} logger logger service instance.
    */
   constructor(logger: LoggerService) {
     this.logger = logger;
@@ -20,11 +21,13 @@ export class LoggerMiddleware implements NestMiddleware {
 
   /**
    * Middleware function that intercepts requests and responses and logs data from them.
-   * @param req - incoming request.
-   * @param res - outgoint response.
-   * @param next - express next function.
+   * 
+   * @param {Request} req incoming request.
+   * @param {Response} res outgoint response.
+   * @param {NextFunction} next express next function.
+   * @returns {void} logs request/response data.
    */
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: Request, res: Response, next: NextFunction): void {
     const { method, originalUrl } = req;
 
     this.logger.info('HTTP Request', {

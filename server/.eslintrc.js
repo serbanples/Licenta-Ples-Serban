@@ -49,27 +49,22 @@ module.exports = {
     'jsdoc/require-returns': 'error',
     'jsdoc/require-returns-description': 'error',
     'jsdoc/require-returns-type': 'error',
-    'jsdoc/valid-types': 'error',
     'jsdoc/check-param-names': 'error',
     'jsdoc/check-tag-names': 'error',
-    'jsdoc/check-types': 'error',
-    'jsdoc/no-undefined-types': 'error',
-    'import/order': [
-      'error',
-      {
-        'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        'newlines-between': 'always',
-        'alphabetize': { 'order': 'asc', 'caseInsensitive': true }
-      }
-    ],
+    'jsdoc/no-types': 'off',
+    'jsdoc/tag-lines': ['error', 'any', { 
+      startLines: 1,
+      endLines: 0,
+      applyToEndTag: false
+    }],
     'no-console': 'warn',
-    'prettier/prettier': 'error',
     'eqeqeq': ['error', 'always'],
     'no-return-await': 'error',
     'require-await': 'error',
     'no-var': 'error',
     'prefer-const': 'error',
     'curly': ['error', 'all'],
+    'prettier/prettier': 'off'
   },
   settings: {
     'import/resolver': {

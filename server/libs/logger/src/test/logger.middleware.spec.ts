@@ -94,7 +94,7 @@ describe('LoggerMiddleware', () => {
     });
 
     it('should handle errors in response event handler', () => {
-      const error = new Error('Test error');
+      new Error('Test error');
       const mockLogger = {
         info: jest.fn(),
         error: jest.fn(),

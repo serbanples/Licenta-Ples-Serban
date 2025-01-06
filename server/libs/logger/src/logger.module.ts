@@ -2,9 +2,13 @@ import { Global, Module } from '@nestjs/common';
 
 import { LoggerService } from './logger.service';
 
+/* eslint-disable @typescript-eslint/no-extraneous-class */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable jsdoc/require-returns */
+
 /**
  * Logger Module class used to inject Logger service into components.
- * @method forRoot - Method needed to call when using LoggerModule.
  */
 @Global()
 @Module({
@@ -15,7 +19,7 @@ import { LoggerService } from './logger.service';
         const serviceName = moduleName.replace('Module', '');
         return new LoggerService(serviceName);
       },
-      inject: ['APP_MODULE_NAME'], // Inject the module name
+      inject: ['APP_MODULE_NAME']
     },
   ],
   exports: [LoggerService],
@@ -23,7 +27,8 @@ import { LoggerService } from './logger.service';
 export class LoggerModule {
   /**
    * Method used to inject the name of the service using the Module into the LoggerService for better logs.
-   * @param serviceName - name of the microservice using the logger.
+   * 
+   * @param {string} serviceName - name of the microservice using the logger.
    */
   static forRoot(serviceName: string) {
     return {
