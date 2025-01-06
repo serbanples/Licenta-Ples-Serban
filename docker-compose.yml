@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  # Mongo db service
+  mongodb: 
+    image: mongo:6.0
+    container_name: licenta_mongodb
+    ports: 
+      - "27017:27017"
+    volumes: 
+      - mongodb_data:/data/db
+
+  # Elastic search service
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: licenta_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 2g
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  # Kibana Service
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.0
+    container_name: licenta_kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
+volumes:
+  mongodb_data:
+    driver: local
+  es_data:
+    driver: local
+    
+    
