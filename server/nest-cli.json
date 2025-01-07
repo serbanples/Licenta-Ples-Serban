@@ -8,15 +8,15 @@
     "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/api-gateway",
+  "root": "apps/auth",
   "projects": {
-    "auth": {
-      "type": "application",
-      "root": "apps/auth",
-      "entryFile": "main",
-      "sourceRoot": "apps/auth/src",
+    "logger": {
+      "type": "library",
+      "root": "libs/logger",
+      "entryFile": "index",
+      "sourceRoot": "libs/logger/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/auth/tsconfig.app.json"
+        "tsConfigPath": "libs/logger/tsconfig.lib.json"
       }
     },
     "api-gateway": {
@@ -28,13 +28,13 @@
         "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
       }
     },
-    "logger": {
-      "type": "library",
-      "root": "libs/logger",
-      "entryFile": "index",
-      "sourceRoot": "libs/logger/src",
+    "dbacc": {
+      "type": "application",
+      "root": "apps/dbacc",
+      "entryFile": "main",
+      "sourceRoot": "apps/dbacc/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/logger/tsconfig.lib.json"
+        "tsConfigPath": "apps/dbacc/tsconfig.app.json"
       }
     }
   }
