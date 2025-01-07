@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request, Response } from 'express';
 
-import { LoggerMiddleware } from '../logger.middleware';
-import { LoggerService } from '../logger.service';
+import { LoggerMiddleware } from '../loggers/logger.middleware';
+import { LoggerService } from '../loggers/logger.service';
 
 import { mockRequest, mockResponse, mockNext } from './logger.mock';
 
@@ -95,6 +95,7 @@ describe('LoggerMiddleware', () => {
 
     it('should handle errors in response event handler', () => {
       new Error('Test error');
+      
       const mockLogger = {
         info: jest.fn(),
         error: jest.fn(),

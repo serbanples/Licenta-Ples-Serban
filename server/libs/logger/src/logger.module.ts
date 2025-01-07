@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { LoggerService } from './logger.service';
+import { LoggerService } from './loggers/logger.service';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */

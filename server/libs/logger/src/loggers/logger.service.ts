@@ -37,11 +37,6 @@ export class LoggerService {
         elasticTransport,
       ],
     });
-
-    this.info('Logger initialized', {
-      timestamp: new Date(),
-      service: this.serviceName,
-    });
   }
 
   /**

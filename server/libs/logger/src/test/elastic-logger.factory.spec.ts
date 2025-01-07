@@ -1,7 +1,7 @@
 import { Client } from '@elastic/elasticsearch';
 import { ElasticsearchTransport } from 'winston-elasticsearch';
 
-import { createElasticLogger } from '../elastic-logger.factory';
+import { createElasticLogger } from '../loggers/elastic-logger.factory';
 
 import { mockConnectionError } from './logger.mock';
 
@@ -38,7 +38,7 @@ describe('ElasticLoggerFactory', () => {
 
   it('should handle elasticsearch connection success', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
-    const transport = createElasticLogger('TestService');
+    createElasticLogger('TestService');
 
     await new Promise(process.nextTick);
     expect(consoleSpy).toHaveBeenCalledWith(

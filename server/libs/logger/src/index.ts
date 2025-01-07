@@ -1,3 +1,3 @@
 export * from './logger.module';
-export * from './logger.service';
-export * from './logger.middleware';
+export * from './loggers/logger.service';
+export * from './loggers/logger.middleware';

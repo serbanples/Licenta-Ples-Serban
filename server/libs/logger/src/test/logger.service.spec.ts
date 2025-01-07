@@ -3,8 +3,8 @@ import { EventEmitter } from 'events';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createLogger } from 'winston';
 
-import { createElasticLogger } from '../elastic-logger.factory';
-import { LoggerService } from '../logger.service';
+import { createElasticLogger } from '../loggers/elastic-logger.factory';
+import { LoggerService } from '../loggers/logger.service';
 
 import {
   mockCreateElasticLogger,
@@ -24,7 +24,7 @@ jest.mock('winston', () => ({
   },
 }));
 
-jest.mock('../elastic-logger.factory', () => ({
+jest.mock('../loggers/elastic-logger.factory', () => ({
   createElasticLogger: jest.fn(),
 }));
 
