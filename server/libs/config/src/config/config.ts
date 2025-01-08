@@ -15,6 +15,13 @@ export const config: configTypes = {
                 register: 'auth_register',
                 whoami: 'auth_whoami'
             }
+        },
+        autz: {
+            serviceName: 'AUTZ_SERVICE',
+            queueName: 'autz_queue',
+            messages: {
+                authorize: 'autz_authorize',
+            }
         }
     }
 }

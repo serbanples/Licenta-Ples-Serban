@@ -36,6 +36,42 @@
       "compilerOptions": {
         "tsConfigPath": "apps/dbacc/tsconfig.app.json"
       }
+    },
+    "auth": {
+      "type": "application",
+      "root": "apps/auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      }
+    },
+    "autz": {
+      "type": "application",
+      "root": "apps/autz",
+      "entryFile": "main",
+      "sourceRoot": "apps/autz/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/autz/tsconfig.app.json"
+      }
+    },
+    "shared_types": {
+      "type": "library",
+      "root": "libs/shared_types",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared_types/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared_types/tsconfig.lib.json"
+      }
+    },
+    "config": {
+      "type": "library",
+      "root": "libs/config",
+      "entryFile": "index",
+      "sourceRoot": "libs/config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
     }
   }
 }

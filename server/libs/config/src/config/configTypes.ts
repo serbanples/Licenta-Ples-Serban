@@ -13,6 +13,13 @@ export type configTypes = {
                 readonly register: string;
                 readonly whoami: string;
             }
+        };
+        readonly autz: {
+            readonly serviceName: string;
+            readonly queueName: string;
+            readonly messages: {
+                readonly authorize: string;
+            }
         }
     }
 }
