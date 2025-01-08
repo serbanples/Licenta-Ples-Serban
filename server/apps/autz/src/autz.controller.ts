@@ -1,13 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 import { AutzService } from './autz.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AutzAuthorizedType } from '@app/shared_types';
 import { config } from '@app/config';
+import { LoggingInterceptor } from '@app/logger';
 
 /** 
  * Authorization controller class.
  */
 @Controller()
+@UseInterceptors(LoggingInterceptor)
 export class AutzController {
   private readonly service: AutzService;
 

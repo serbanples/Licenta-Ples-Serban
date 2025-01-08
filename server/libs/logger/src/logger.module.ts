@@ -1,6 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 
 import { LoggerService } from './loggers/logger.service';
+import { LoggingInterceptor } from './loggers/logging.interceptor';
+import { LoggerMiddleware } from './loggers/logger.middleware';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
@@ -21,8 +23,14 @@ import { LoggerService } from './loggers/logger.service';
       },
       inject: ['APP_MODULE_NAME']
     },
+    LoggingInterceptor,
+    LoggerMiddleware
   ],
-  exports: [LoggerService],
+  exports: [
+    LoggerService,
+    LoggingInterceptor,
+    LoggerMiddleware
+  ],
 })
 export class LoggerModule {
   /**
