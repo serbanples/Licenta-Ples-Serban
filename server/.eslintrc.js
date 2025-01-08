@@ -71,6 +71,9 @@ module.exports = {
       typescript: {
         alwaysTryTypes: true,
       }
-    }
+    },
+    'import/ignore': [
+      'lodash',
+    ]
   }
 };

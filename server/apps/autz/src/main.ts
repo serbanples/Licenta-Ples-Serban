@@ -4,7 +4,10 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { config } from 'libs/config/src';
 import { LoggerService } from '@app/logger';
 
-async function bootstrap() {
+/* eslint-disable no-console */
+
+/** Start method for Authorization Microservice */
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AutzModule, {
     transport: Transport.RMQ,
     options: {

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LoggerService } from '@app/logger';
 import * as authConfig from './rules/authorization.json';
 import { UserRoleEnum } from '@app/shared_types';
+import * as _ from 'lodash';
 
 interface AuthConfig {
   [role: string]: {
@@ -11,16 +12,32 @@ interface AuthConfig {
   };
 }
 
+/**
+ * Authorization Service class.
+ */
 @Injectable()
 export class AutzService {
   private readonly authConfig: AuthConfig;
   private readonly logger: LoggerService;
 
+  /**
+   * Constructor method.
+   * 
+   * @param {LoggerService} logger logger instance to be used by authorization service.
+   */
   constructor(logger: LoggerService) {
       this.authConfig = authConfig as AuthConfig;
       this.logger = logger;
   }
 
+  /**
+   * Method used to check if a user is authorized to access a resource.
+   * 
+   * @param {UserRoleEnum} role role of the user.
+   * @param {string} resource resource accessed.
+   * @param {string} action method called.
+   * @returns {boolean} true if user is authorized, false if not.
+   */
   isAuthorized(role: UserRoleEnum, resource: string, action: string): boolean {
     try {
         if (!this.authConfig[role]) {
@@ -55,6 +72,16 @@ export class AutzService {
     }
   }
 
+  /**
+   * Method used to log authorization check result.
+   * 
+   * @param {string} role user role.
+   * @param {string} resource resource accessed.
+   * @param {string} action method called.
+   * @param {boolean} result auhtorization result
+   * @param {string} reason error message.
+   * @returns {void} logs authorizationr result.
+   */
   private logAuthzCheck(role: string, resource: string, action: string, result: boolean, reason?: string): void {
       this.logger.info('Authorization check', {
           event: 'authorization_check',
@@ -62,7 +89,7 @@ export class AutzService {
           resource,
           action,
           result: result ? 'allowed' : 'denied',
-          ...(reason && { reason }),
+          ...(_.isNil(reason) && { reason }),
           timestamp: new Date().toISOString()
       });
   }

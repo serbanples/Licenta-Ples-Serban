@@ -1,18 +1,18 @@
 import { UserRoleEnum } from "@app/shared_types";
 
 // Mock services
-export var mockLoggerService = {
+export const mockLoggerService = {
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
 };
 
-export var mockAutzService = {
+export const mockAutzService = {
     isAuthorized: jest.fn(),
 };
 
 // Mock payloads
-export var mockAutzPayloads = {
+export const mockAutzPayloads = {
     validAdminPayload: {
         usercontext: {
             id: '123',

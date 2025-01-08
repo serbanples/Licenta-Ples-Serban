@@ -15,8 +15,6 @@ import {
 describe('AutzController', () => {
     let controller: AutzController;
     let service: jest.Mocked<AutzService>;
-    // @ts-ignore : testing
-    let logger: jest.Mocked<LoggerService>;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -35,11 +33,10 @@ describe('AutzController', () => {
 
         controller = module.get<AutzController>(AutzController);
         service = module.get(AutzService);
-        logger = module.get(LoggerService);
     });
 
     describe('authorize', () => {
-        it('should return true for authorized action', async () => {
+        it('should return true for authorized action', () => {
             const { validAdminPayload } = mockAutzPayloads;
             
             service.isAuthorized.mockReturnValue(true);
