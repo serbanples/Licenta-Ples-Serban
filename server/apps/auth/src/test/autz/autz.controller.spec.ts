@@ -4,8 +4,8 @@ jest.mock('../rules/authorization.json', () =>
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerService } from '@app/logger';
-import { AutzController } from '../autz.controller';
-import { AutzService } from '../autz.service';
+import { AutzController } from '../../autz-lib/controller/autz.controller';
+import { AutzService } from '../../autz-lib/service/autz.service';
 import {  
     mockLoggerService, 
     mockAutzService,

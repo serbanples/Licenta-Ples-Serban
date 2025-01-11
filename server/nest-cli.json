@@ -46,15 +46,6 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
-    "autz": {
-      "type": "application",
-      "root": "apps/autz",
-      "entryFile": "main",
-      "sourceRoot": "apps/autz/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/autz/tsconfig.app.json"
-      }
-    },
     "shared_types": {
       "type": "library",
       "root": "libs/shared_types",

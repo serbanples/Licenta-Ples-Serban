@@ -1,5 +1,5 @@
 import { Controller, UseInterceptors } from '@nestjs/common';
-import { AutzService } from './autz.service';
+import { AutzService } from '../service/autz.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AutzAuthorizedType } from '@app/shared_types';
 import { config } from '@app/config';
@@ -28,7 +28,7 @@ export class AutzController {
    * @param {AutzAuthorizedType} data object containing user role, resource accessed and action.
    * @returns {boolean} true if user is authorized, false if not.
    */
-  @MessagePattern(config.rabbitMQ.autz.messages.authorize)
+  @MessagePattern(config.rabbitMQ.auth.messages.authorize)
   authorize(@Payload() data: AutzAuthorizedType): boolean {
     return this.service.isAuthorized(data.usercontext.role, data.resource, data.action);
   }

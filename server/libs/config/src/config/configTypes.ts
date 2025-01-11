@@ -12,14 +12,12 @@ export type configTypes = {
                 readonly login: string;
                 readonly register: string;
                 readonly whoami: string;
-            }
-        };
-        readonly autz: {
-            readonly serviceName: string;
-            readonly queueName: string;
-            readonly messages: {
                 readonly authorize: string;
             }
-        }
+        };
+    }
+    readonly mongodb: {
+        readonly auth_db_uri: string;
+        readonly data_db_uri: string;
     }
 }
