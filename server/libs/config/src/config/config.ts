@@ -11,9 +11,9 @@ export const config: configTypes = {
             serviceName: 'AUTH_SERVICE',
             queueName: 'auth_queue',
             messages: {
-                login: 'auth_login',
-                register: 'auth_register',
-                whoami: 'auth_whoami',
+                generateToken: 'auth_generate_token',
+                createAccount: 'auth_create_account',
+                validateToken: 'auth_validate_token',
                 authorize: 'authorize',
             }
         },

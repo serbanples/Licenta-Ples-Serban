@@ -27,7 +27,7 @@ export class AuthApiService {
    * @returns {Observable<AuthResponse>} response from auth server.
    */
   register(requestData: NewAccountDto): Observable<AuthResponse> {
-    return this.authServer.send(config.rabbitMQ.auth.messages.register, requestData);
+    return this.authServer.send(config.rabbitMQ.auth.messages.createAccount, requestData);
   }
 
   /**
@@ -37,7 +37,7 @@ export class AuthApiService {
    * @returns {Observable<Token>} access token from auth server.
    */
   login(requestData: LoginAccountDto): Observable<Token> {
-    return this.authServer.send(config.rabbitMQ.auth.messages.login, requestData);
+    return this.authServer.send(config.rabbitMQ.auth.messages.generateToken, requestData);
   }
 
   /**
@@ -47,6 +47,6 @@ export class AuthApiService {
    * @returns 
    */
   whoami(token: Token): Observable<UserContextType> {
-    return this.authServer.send(config.rabbitMQ.auth.messages.whoami, token);
+    return this.authServer.send(config.rabbitMQ.auth.messages.validateToken, token);
   }
 }

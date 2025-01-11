@@ -24,35 +24,35 @@ export class AuthController {
   }
  
   /**
-   * Method used to proccess register messages
+   * Method used to proccess create account messages
    * 
    * @param {NewAccountDto} newAccount registration data.
    * @returns {Observable<AuthResponse>} registration response.
    */
-  @MessagePattern(config.rabbitMQ.auth.messages.register)
+  @MessagePattern(config.rabbitMQ.auth.messages.createAccount)
   createAccount(@Payload() newAccount: NewAccountDto): Observable<AuthResponse> {
     return this.authService.createAccount(newAccount);
   }
 
   /**
-   * Method used to proccess login messages
+   * Method used to proccess generate token messages.
    * 
    * @param {LoginAccountDto} loginAccount login data.
    * @returns {Observable<Token>} access token generated for the user.
    */
-  @MessagePattern(config.rabbitMQ.auth.messages.login)
-  loginAccount(@Payload() loginAccount: LoginAccountDto): Observable<Token> {
+  @MessagePattern(config.rabbitMQ.auth.messages.generateToken)
+  generateToken(@Payload() loginAccount: LoginAccountDto): Observable<Token> {
     return this.authService.login(loginAccount);
   }
 
   /**
-   * Method used to proccess whoami messages
+   * Method used to proccess validate token messages
    * 
    * @param {Token} token user token.
    * @returns {Observable<any>} user data extracted from token.
    */
-  @MessagePattern(config.rabbitMQ.auth.messages.whoami)
-  whoami(@Payload() token: Token): Observable<UserContextType> {
+  @MessagePattern(config.rabbitMQ.auth.messages.validateToken)
+  validateToken(@Payload() token: Token): Observable<UserContextType> {
     return this.authService.whoami(token);
   }
 }

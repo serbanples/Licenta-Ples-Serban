@@ -3,7 +3,7 @@ import { AuthApiService } from './auth-api.service';
 import { AuthResponse, LoginAccountDto, NewAccountDto, RequestWrapper, UserContextType } from '@app/shared';
 import { map, Observable } from 'rxjs';
 import { Response } from 'express';
-import { AuthGuard } from '../guards/auth-api.guard';
+import { JwtGuard } from '../guards/jwt.guard';
 import * as _ from 'lodash';
 
 /**
@@ -71,7 +71,7 @@ export class AuthApiController {
    * @param {Request} request request object.
    * @returns {Token} whoami response.
    */
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   @Get('whoami')
   whoami(@Req() request: RequestWrapper): UserContextType {

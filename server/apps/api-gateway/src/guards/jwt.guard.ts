@@ -9,7 +9,7 @@ import { RequestWrapper } from '@app/shared';
  * Auth guard class used to authenticate users on protected routes.
  */
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class JwtGuard implements CanActivate {
   public readonly reflector: Reflector;
   private readonly authApiService: AuthApiService;
 
