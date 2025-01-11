@@ -1,6 +1,9 @@
-import { UserRoleEnum } from "@app/shared_types";
+import { UserRoleEnum } from "@app/shared";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from "mongoose";
+import * as _ from 'lodash';
+
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 
 /**
  * Class used to define the user schema.
@@ -10,16 +13,18 @@ import mongoose from "mongoose";
     collection: 'accounts',
     toJSON: {
         transform: (__, ret) => {
-            if(ret['_id'])
+            if(!_.isNil(ret['_id'])) {
                 ret['_id'] = ret['_id'].toString();
+            }
             delete ret['_id'];
             delete ret['__v'];
         }
     },
     toObject: {
         transform: (__, ret) => {
-            if(ret['_id'])
+            if(!_.isNil(ret['_id'])) {
                 ret['_id'] = ret['_id'].toString();
+            }
             delete ret['_id'];
             delete ret['__v'];
         }

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerService } from '@app/logger';
-import { AutzService } from '../../../../autz/src/autz.service';
-import { UserRoleEnum } from '@app/shared_types';
+import { AutzService } from '../../autz-lib/autz.service';
+import { UserRoleEnum } from '@app/shared';
 
-jest.mock('../rules/authorization.json', () => ({
+jest.mock('../../autz-lib/rules/authorization.json', () => ({
     "user": {
         "users": {
             "create": false,

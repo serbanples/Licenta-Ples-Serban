@@ -1,10 +1,26 @@
-import { Module } from '@nestjs/common';
-import { ApiGatewayController } from './api-gateway.controller';
-import { ApiGatewayService } from './api-gateway.service';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { LoggerMiddleware, LoggerModule } from '@app/logger';
+import { AuthApiModule } from './auth-api/auth-api.module';
 
+/**
+ * Api gateway module class.
+ */
 @Module({
-  imports: [],
-  controllers: [ApiGatewayController],
-  providers: [ApiGatewayService],
+  imports: [
+    LoggerModule.forRoot('Api Gateway'),
+    AuthApiModule
+  ],
+  controllers: [],
+  providers: [],
 })
-export class ApiGatewayModule {}
+export class ApiGatewayModule implements NestModule {
+  /**
+   * Method used to set global middleware logger.
+   * 
+   * @param {MiddlewareConsumer} consumer Middleware consumer
+   * @returns {void} applies Logging middleware to every route.
+   */
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

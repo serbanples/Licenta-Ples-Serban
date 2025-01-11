@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from '@app/logger';
-import * as authConfig from '../rules/authorization.json';
-import { UserRoleEnum } from '@app/shared_types';
+import * as authConfig from './rules/authorization.json';
+import { UserRoleEnum } from '@app/shared';
 import * as _ from 'lodash';
 
 interface AuthConfig {

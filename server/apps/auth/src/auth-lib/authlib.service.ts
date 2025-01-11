@@ -4,7 +4,7 @@ import { map, Observable, switchMap } from 'rxjs';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginAccountDto, NewAccountDto, Token } from '@app/shared_types';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token } from '@app/shared';
 import { AccountType } from './model/account.schema';
 
 /**
@@ -20,6 +20,7 @@ export class AuthService {
    * Constructor method.
    * 
    * @param {AccountModel} model account model used.
+   * @param {JwtService} jwtService jwt service instance used to sign and validate tokens.
    */
   constructor(model: AccountModel, jwtService: JwtService) {
     this.accountModel = model;
@@ -30,14 +31,15 @@ export class AuthService {
    * Method used to create a new account.
    * 
    * @param {NewAccountDto} newAccount new account data.
-   * @returns {Observable<AccountType>} user account.
+   * @returns {Observable<AuthResponse>} registration resoponse if successful.
    */
-  createAccount(newAccount: NewAccountDto): Observable<AccountType> {
+  createAccount(newAccount: NewAccountDto): Observable<AuthResponse> {
     return this.accountModel.findOne({ email: newAccount.email })
       .pipe(
         map((user) => {
-          if(!_.isNil(user))
+          if(!_.isNil(user)) {
               throw new BadRequestException('User already exists');
+          }
         }),
         switchMap(() => {
           return this.hashPassword(newAccount.password);
@@ -49,22 +51,24 @@ export class AuthService {
           }
 
           return this.accountModel.create(userInfo);
-        })
+        }),
+        map(() => ({ success: true }))
       )
   }
 
   /**
-   * Method used to login a user.
+   * Method used to generate a token for the user.
    * 
-   * @param
-   * @returns {Token} user access token.
+   * @param {LoginAccountDto} loginAccount user to generate token for.
+   * @returns {Observable<Token>} user access token.
    */
   login(loginAccount: LoginAccountDto): Observable<Token> {
     return this.accountModel.findOne({ email: loginAccount.email })
       .pipe(
         switchMap((user) => {
-          if(_.isNil(user))
+          if(_.isNil(user)) {
             throw new NotFoundException('User not found!')
+          }
 
           return this.compareHash(loginAccount.password, user.password)
             .then((passwordsEqual) => {
@@ -102,7 +106,7 @@ export class AuthService {
   }
 
   // private notifyDbAcc() {
-
+  /// emit event to db acc with user data in order to insert new user there.
   // }
 
   /**

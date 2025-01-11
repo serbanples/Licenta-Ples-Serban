@@ -1,7 +1,7 @@
 import { Controller, UseInterceptors } from '@nestjs/common';
-import { AutzService } from '../service/autz.service';
+import { AutzService } from './autz.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { AutzAuthorizedType } from '@app/shared_types';
+import { AutzAuthorizedType } from '@app/shared';
 import { config } from '@app/config';
 import { LoggingInterceptor } from '@app/logger';
 

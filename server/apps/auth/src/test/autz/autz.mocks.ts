@@ -1,4 +1,4 @@
-import { UserRoleEnum } from "@app/shared_types";
+import { UserRoleEnum } from "@app/shared";
 
 // Mock services
 export const mockLoggerService = {

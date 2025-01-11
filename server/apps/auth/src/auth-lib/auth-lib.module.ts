@@ -7,8 +7,10 @@ import { config } from '@app/config';
 import { AccountSchema, AccountType } from './model/account.schema';
 import { AccountModel } from './model/account.model';
 
+/* eslint-disable @typescript-eslint/no-extraneous-class */
+
 /**
- * Auth lib module class.
+ * Auth lib module class used to handle authentication part for authentication microservice.
  */
 @Module({
   imports: [

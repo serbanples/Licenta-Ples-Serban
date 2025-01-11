@@ -39,8 +39,8 @@
       "@app/logger": [
         "libs/logger/src"
       ],
-      "@app/shared_types": [
-        "libs/shared_types/src"
+      "@app/shared": [
+        "libs/shared/src"
       ],
       "@app/config": [
         "libs/config/src"

@@ -13,15 +13,13 @@ export const config: configTypes = {
             messages: {
                 login: 'auth_login',
                 register: 'auth_register',
-                whoami: 'auth_whoami'
+                whoami: 'auth_whoami',
+                authorize: 'authorize',
             }
         },
-        autz: {
-            serviceName: 'AUTZ_SERVICE',
-            queueName: 'autz_queue',
-            messages: {
-                authorize: 'autz_authorize',
-            }
-        }
+    },
+    mongodb: {
+        auth_db_uri: 'mongodb://localhost:27017/licenta_auth',
+        data_db_uri: 'mongodb://localhost:27017/data_auth'
     }
 }

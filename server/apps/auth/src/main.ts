@@ -18,6 +18,7 @@ async function bootstrap(): Promise<void> {
       }
     }
   });
+
   const logger = app.get(LoggerService);
 
   await app.listen();
