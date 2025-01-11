@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthApiService } from './auth-api.service';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, RequestWrapper, UserContextType } from '@app/shared';
 import { map, Observable } from 'rxjs';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthGuard } from '../guards/auth-api.guard';
+import * as _ from 'lodash';
 
 /**
  * Auth api controller class used to handle authenticationr requests.
@@ -44,7 +46,7 @@ export class AuthApiController {
     return this.service.login(loginData)
       .pipe(
         map((token) => {
-          this.setCookie(response, token.access_token);
+          this.setCookie(response, token.accessToken);
           return { success: true };
         })
       );
@@ -69,10 +71,15 @@ export class AuthApiController {
    * @param {Request} request request object.
    * @returns {Token} whoami response.
    */
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get('whoami')
-  whoami(@Req() request: Request): Token {
-    return { access_token: request.cookies['accessToken'] };
+  whoami(@Req() request: RequestWrapper): UserContextType {
+    if(_.isNil(request.user)) {
+      throw new BadRequestException()
+    }
+
+    return request.user;
   }
 
   /**

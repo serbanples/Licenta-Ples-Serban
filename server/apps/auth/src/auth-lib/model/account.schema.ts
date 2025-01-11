@@ -12,6 +12,7 @@ import * as _ from 'lodash';
     timestamps: true,
     collection: 'accounts',
     toJSON: {
+        virtuals: true,
         transform: (__, ret) => {
             if(!_.isNil(ret['_id'])) {
                 ret['_id'] = ret['_id'].toString();
@@ -21,6 +22,7 @@ import * as _ from 'lodash';
         }
     },
     toObject: {
+        virtuals: true,
         transform: (__, ret) => {
             if(!_.isNil(ret['_id'])) {
                 ret['_id'] = ret['_id'].toString();
@@ -30,7 +32,7 @@ import * as _ from 'lodash';
         }
     }
 })
-export class AccountType extends mongoose.Document{
+export class AccountType extends mongoose.Document {
     @Prop({ required: true, unique: true })
     email!: string;
 

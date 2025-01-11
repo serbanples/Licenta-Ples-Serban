@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { LoggerMiddleware, LoggerModule } from '@app/logger';
 import { AuthApiModule } from './auth-api/auth-api.module';
+import { AuthGuard } from './guards/auth-api.guard';
 
 /**
  * Api gateway module class.
@@ -11,7 +12,7 @@ import { AuthApiModule } from './auth-api/auth-api.module';
     AuthApiModule
   ],
   controllers: [],
-  providers: [],
+  providers: [AuthGuard],
 })
 export class ApiGatewayModule implements NestModule {
   /**

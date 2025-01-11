@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './authlib.service';
@@ -43,5 +43,16 @@ export class AuthController {
   @MessagePattern(config.rabbitMQ.auth.messages.login)
   loginAccount(@Payload() loginAccount: LoginAccountDto): Observable<Token> {
     return this.authService.login(loginAccount);
+  }
+
+  /**
+   * Method used to proccess whoami messages
+   * 
+   * @param {Token} token user token.
+   * @returns {Observable<any>} user data extracted from token.
+   */
+  @MessagePattern(config.rabbitMQ.auth.messages.whoami)
+  whoami(@Payload() token: Token): Observable<UserContextType> {
+    return this.authService.whoami(token);
   }
 }

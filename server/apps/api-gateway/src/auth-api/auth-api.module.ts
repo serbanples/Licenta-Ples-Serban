@@ -26,6 +26,7 @@ import { config } from '@app/config';
     ]),
   ],
   controllers: [AuthApiController],
-  providers: [AuthApiService]
+  providers: [AuthApiService],
+  exports: [AuthApiService]
 })
 export class AuthApiModule {}

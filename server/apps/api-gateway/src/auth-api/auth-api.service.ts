@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
@@ -38,5 +38,15 @@ export class AuthApiService {
    */
   login(requestData: LoginAccountDto): Observable<Token> {
     return this.authServer.send(config.rabbitMQ.auth.messages.login, requestData);
+  }
+
+  /**
+   * Method used in order to send a whoami message to auth server.
+   * 
+   * @param {Token} token user access token.
+   * @returns 
+   */
+  whoami(token: Token): Observable<UserContextType> {
+    return this.authServer.send(config.rabbitMQ.auth.messages.whoami, token);
   }
 }

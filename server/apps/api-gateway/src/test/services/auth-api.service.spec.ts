@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthApiService } from '../auth-api/auth-api.service';
+import { AuthApiService } from '../../auth-api/auth-api.service';
 
 describe('AuthApiService', () => {
   let service: AuthApiService;

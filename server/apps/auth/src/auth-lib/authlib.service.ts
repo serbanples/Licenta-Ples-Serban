@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { AccountModel } from './model/account.model';
-import { map, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
 import { AccountType } from './model/account.schema';
 
 /**
@@ -57,9 +57,9 @@ export class AuthService {
   }
 
   /**
-   * Method used to generate a token for the user.
+   * Method used to login a user.
    * 
-   * @param {LoginAccountDto} loginAccount user to generate token for.
+   * @param {LoginAccountDto} loginAccount user to login.
    * @returns {Observable<Token>} user access token.
    */
   login(loginAccount: LoginAccountDto): Observable<Token> {
@@ -80,9 +80,19 @@ export class AuthService {
             });
         }),
         map((token) => {
-          return { access_token: token }
+          return { accessToken: token }
         })
       )
+  }
+
+  /**
+   * Method used to get user credentials from a token.
+   * 
+   * @param {Token} token user access token.
+   * @returns {Observable} user data.
+   */
+  whoami(token: Token): Observable<UserContextType> {
+    return from(this.verifyToken(token.accessToken));
   }
 
   /**
@@ -116,8 +126,26 @@ export class AuthService {
    * @returns {Promsie<string>} access token.
    */
   private generateToken(userData: AccountType): Promise<string> {
-    const payload = { sub: userData.id, email: userData.email, role: userData.role };
+    console.log(userData.id)
+    const payload = { id: userData.id, email: userData.email, role: userData.role };
 
     return this.jwtService.signAsync(payload);
+  }
+
+  /**
+   * Method used to validate a jwt token.
+   * 
+   * @param {string} token jwt token.
+   * @returns {Promise} user context.
+   */
+  private verifyToken(token: string): Promise<UserContextType> {
+    return this.jwtService.verifyAsync(token)
+      .then((decodedToken) => {
+        return {
+          id: decodedToken['id'],
+          email: decodedToken['email'],
+          role: decodedToken['role']
+        };
+      });
   }
 }
