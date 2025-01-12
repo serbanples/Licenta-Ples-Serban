@@ -17,6 +17,12 @@ export const config: configTypes = {
                 authorize: 'authorize',
             }
         },
+        mailer: {
+            serviceName: 'MAIL_SERVICE',
+            queueName: 'mail_queue',
+            messages: {
+            }
+        }
     },
     mongodb: {
         auth_db_uri: 'mongodb://localhost:27017/licenta_auth',

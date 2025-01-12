@@ -9,12 +9,14 @@ export type configTypes = {
             readonly serviceName: string;
             readonly queueName: string;
             readonly messages: {
-                readonly generateToken: string;
-                readonly createAccount: string;
-                readonly validateToken: string;
-                readonly authorize: string;
             }
         };
+        readonly mailer: {
+            readonly serviceName: string;
+            readonly queueName: string;
+            readonly messages: {
+            }
+        }
     }
     readonly mongodb: {
         readonly auth_db_uri: string;
