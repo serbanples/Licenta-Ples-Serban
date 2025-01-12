@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { MailerModule } from './mailer.module';
+import { MailModule } from './mail.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { config } from '@app/config';
 import { LoggerService } from '@app/logger';
@@ -8,7 +8,7 @@ import { LoggerService } from '@app/logger';
 
 /** Start method for Authorization Microservice */
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(MailerModule, {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(MailModule, {
     transport: Transport.RMQ,
     options: {
       urls: [config.rabbitMQ.url],

@@ -33,14 +33,20 @@ import * as _ from 'lodash';
     }
 })
 export class AccountType extends mongoose.Document {
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true, unique: true, type: String })
     email!: string;
 
-    @Prop({ required: true, select: false })
+    @Prop({ required: true, select: false, type: String })
     password!: string;
 
     @Prop({ required: true, enum: UserRoleEnum, default: UserRoleEnum.USER, type: String })
     role!: UserRoleEnum;
+
+    @Prop({ default: false, type: Boolean })
+    isVerified!: boolean;
+
+    @Prop({ required: false })
+    accountVerificationToken!: string;
 }
 
 export const AccountSchema = SchemaFactory.createForClass(AccountType);

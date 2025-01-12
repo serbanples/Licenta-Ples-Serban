@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { config } from '@app/config';
 import { AccountSchema, AccountType } from './model/account.schema';
 import { AccountModel } from './model/account.model';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 
@@ -19,7 +20,20 @@ import { AccountModel } from './model/account.model';
       signOptions: { expiresIn: '24h'},
     }),
     MongooseModule.forRoot(config.mongodb.auth_db_uri),
-    MongooseModule.forFeature([{ name: AccountType.name, schema: AccountSchema }])
+    MongooseModule.forFeature([{ name: AccountType.name, schema: AccountSchema }]),
+    ClientsModule.register([
+      {
+        name: config.rabbitMQ.mailer.serviceName,
+        transport: Transport.RMQ,
+        options: {
+          urls: [config.rabbitMQ.url],
+          queue: config.rabbitMQ.mailer.queueName,
+          queueOptions: {
+            durable: false,
+          }
+        }
+      }
+    ]),
   ],
   controllers: [AuthController],
   providers: [AuthService, AccountModel],

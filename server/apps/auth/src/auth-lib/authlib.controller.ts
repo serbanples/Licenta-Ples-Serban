@@ -3,7 +3,6 @@ import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } 
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './authlib.service';
-import { Observable } from 'rxjs';
 import { LoggingInterceptor } from '@app/logger';
 
 /**
@@ -30,7 +29,7 @@ export class AuthController {
    * @returns {Observable<AuthResponse>} registration response.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.createAccount)
-  createAccount(@Payload() newAccount: NewAccountDto): Observable<AuthResponse> {
+  createAccount(@Payload() newAccount: NewAccountDto): Promise<AuthResponse> {
     return this.authService.createAccount(newAccount);
   }
 
@@ -41,7 +40,7 @@ export class AuthController {
    * @returns {Observable<Token>} access token generated for the user.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.generateToken)
-  generateToken(@Payload() loginAccount: LoginAccountDto): Observable<Token> {
+  generateToken(@Payload() loginAccount: LoginAccountDto): Promise<Token> {
     return this.authService.login(loginAccount);
   }
 
@@ -52,7 +51,7 @@ export class AuthController {
    * @returns {Observable<any>} user data extracted from token.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.validateToken)
-  validateToken(@Payload() token: Token): Observable<UserContextType> {
+  validateToken(@Payload() token: Token): Promise<UserContextType> {
     return this.authService.whoami(token);
   }
 }

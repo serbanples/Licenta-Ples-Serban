@@ -48,6 +48,20 @@ services:
     depends_on:
       - elasticsearch
 
+  rabbitmq: 
+    image: rabbitmq:4.0.5-management
+    container_name: licenta_rabitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  smtp:
+    image: maildev/maildev
+    container_name: licenta_fake_smtp
+    ports: 
+      - "1025:1025"
+      - "1080:1080"
+
 volumes:
   mongodb_data:
     driver: local

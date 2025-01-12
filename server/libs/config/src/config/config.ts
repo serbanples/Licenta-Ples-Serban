@@ -21,11 +21,17 @@ export const config: configTypes = {
             serviceName: 'MAIL_SERVICE',
             queueName: 'mail_queue',
             messages: {
+                verifyAccount: 'mailer_verify_account'
             }
         }
     },
     mongodb: {
         auth_db_uri: 'mongodb://localhost:27017/licenta_auth',
         data_db_uri: 'mongodb://localhost:27017/data_auth'
-    }
+    },
+    smtp: {
+        host: 'localhost',
+        port: 1025
+    },
+    sendInBlue: '8tmwc3YIbR4kSDEr'
 }

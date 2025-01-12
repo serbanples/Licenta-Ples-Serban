@@ -1,11 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AccountModel } from './model/account.model';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
 import { AccountType } from './model/account.schema';
+import { config } from '@app/config';
+import { ClientProxy } from '@nestjs/microservices';
 
 /**
  * Auth service class.
@@ -14,6 +16,7 @@ import { AccountType } from './model/account.schema';
 export class AuthService {
   private readonly accountModel: AccountModel;
   private readonly jwtService: JwtService;
+  private readonly mailClient: ClientProxy;
   private readonly SALT_ROUNDS = 10;
 
   /**
@@ -22,67 +25,90 @@ export class AuthService {
    * @param {AccountModel} model account model used.
    * @param {JwtService} jwtService jwt service instance used to sign and validate tokens.
    */
-  constructor(model: AccountModel, jwtService: JwtService) {
+  constructor(model: AccountModel, jwtService: JwtService, @Inject(config.rabbitMQ.mailer.serviceName) mailer: ClientProxy) {
     this.accountModel = model;
     this.jwtService = jwtService;
+    this.mailClient = mailer;
   }
 
   /**
    * Method used to create a new account.
    * 
    * @param {NewAccountDto} newAccount new account data.
-   * @returns {Observable<AuthResponse>} registration resoponse if successful.
+   * @returns {Promise<AuthResponse>} registration resoponse if successful.
    */
-  createAccount(newAccount: NewAccountDto): Observable<AuthResponse> {
+  async createAccount(newAccount: NewAccountDto): Promise<AuthResponse> {
     return this.accountModel.findOne({ email: newAccount.email })
-      .pipe(
-        map((user) => {
-          if(!_.isNil(user)) {
-              throw new BadRequestException('User already exists');
-          }
-        }),
-        switchMap(() => {
-          return this.hashPassword(newAccount.password);
-        }),
-        switchMap((hashedPassword) => {
-          const userInfo = {
-            email: newAccount.email,
-            password: hashedPassword
-          }
+      .then((user) => {
+        if(!_.isNil(user)) {
+          throw new BadRequestException('User already exists');
+        }
+        return Promise.all([
+          this.hashPassword(newAccount.password),
+          this.generateVerificationToken(newAccount.email)
+        ]);
+      })
+      .then(async ([hashedPassword, verificationToken]) => {
+        const user = {
+          email: newAccount.email,
+          password: hashedPassword,
+          accountVerificationToken: verificationToken
+        }
 
-          return this.accountModel.create(userInfo);
-        }),
-        map(() => ({ success: true }))
-      )
+        await this.accountModel.create(user);
+        return verificationToken;
+      })
+      .then(async (verificationToken) => {
+        await this.sendVerificationEmail(newAccount.email, verificationToken)
+
+        return { success: true }
+      })
+
+      // .pipe(
+      //   map((user) => {
+      //     if(!_.isNil(user)) {
+      //         throw new BadRequestException('User already exists');
+      //     }
+      //   }),
+      //   switchMap(() => {
+      //     return this.hashPassword(newAccount.password);
+      //   }),
+      //   switchMap((hashedPassword) => {
+      //     const userInfo = {
+      //       email: newAccount.email,
+      //       password: hashedPassword
+      //     }
+
+      //     return this.accountModel.create(userInfo);
+      //   }),
+      //   map(() => ({ success: true }))
+      // )
   }
 
   /**
    * Method used to login a user.
    * 
    * @param {LoginAccountDto} loginAccount user to login.
-   * @returns {Observable<Token>} user access token.
+   * @returns {Promise<Token>} user access token.
    */
-  login(loginAccount: LoginAccountDto): Observable<Token> {
+  async login(loginAccount: LoginAccountDto): Promise<Token> {
     return this.accountModel.findOne({ email: loginAccount.email })
-      .pipe(
-        switchMap((user) => {
-          if(_.isNil(user)) {
-            throw new NotFoundException('User not found!')
-          }
+      .then((user) => {
+        if(_.isNil(user)) {
+          throw new NotFoundException('User not found!')
+        }
+        return this.compareHash(loginAccount.password, user.password)
+          .then((passwordsEqual) => {
+            if(!passwordsEqual) {
+              throw new BadRequestException('Incorrect password.');
+            }
 
-          return this.compareHash(loginAccount.password, user.password)
-            .then((passwordsEqual) => {
-              if(!passwordsEqual) {
-                throw new BadRequestException('Incorrect password.');
-              }
-
-              return this.generateToken(user);
-            });
-        }),
-        map((token) => {
-          return { accessToken: token }
-        })
-      )
+            return this.generateToken(user);
+          });
+      })
+      .then((token) => {
+        return { accessToken: token };
+      })
   }
 
   /**
@@ -91,8 +117,8 @@ export class AuthService {
    * @param {Token} token user access token.
    * @returns {Observable} user data.
    */
-  whoami(token: Token): Observable<UserContextType> {
-    return from(this.verifyToken(token.accessToken));
+  whoami(token: Token): Promise<UserContextType> {
+    return this.verifyToken(token.accessToken);
   }
 
   /**
@@ -126,10 +152,13 @@ export class AuthService {
    * @returns {Promsie<string>} access token.
    */
   private generateToken(userData: AccountType): Promise<string> {
-    console.log(userData.id)
     const payload = { id: userData.id, email: userData.email, role: userData.role };
 
     return this.jwtService.signAsync(payload);
+  }
+
+  private generateVerificationToken(userEmail: string): Promise<string> {
+    return this.jwtService.signAsync({ email: userEmail });
   }
 
   /**
@@ -138,7 +167,7 @@ export class AuthService {
    * @param {string} token jwt token.
    * @returns {Promise} user context.
    */
-  private verifyToken(token: string): Promise<UserContextType> {
+  private async verifyToken(token: string): Promise<UserContextType> {
     return this.jwtService.verifyAsync(token)
       .then((decodedToken) => {
         return {
@@ -147,5 +176,10 @@ export class AuthService {
           role: decodedToken['role']
         };
       });
+  }
+
+  private sendVerificationEmail(email: string, verificationToken: string): Promise<void> {
+    console.log(email, verificationToken);
+    return firstValueFrom(this.mailClient.emit(config.rabbitMQ.mailer.messages.verifyAccount, { to: email, verificationToken }));
   }
 }
