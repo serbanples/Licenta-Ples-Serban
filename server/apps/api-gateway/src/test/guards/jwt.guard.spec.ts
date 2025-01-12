@@ -5,6 +5,8 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 import { RequestWrapper } from '@app/shared';
 
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 describe('JwtGuard', () => {
   let jwtGuard: JwtGuard;
   let authApiService: AuthApiService;

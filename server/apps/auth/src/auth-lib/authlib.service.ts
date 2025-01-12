@@ -1,6 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AccountModel } from './model/account.model';
-import { firstValueFrom } from 'rxjs';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -24,6 +23,7 @@ export class AuthService {
    * 
    * @param {AccountModel} model account model used.
    * @param {JwtService} jwtService jwt service instance used to sign and validate tokens.
+   * @param {ClientProxy} mailer proxy to mailer microservice.
    */
   constructor(model: AccountModel, jwtService: JwtService, @Inject(config.rabbitMQ.mailer.serviceName) mailer: ClientProxy) {
     this.accountModel = model;
@@ -59,30 +59,10 @@ export class AuthService {
         return verificationToken;
       })
       .then(async (verificationToken) => {
-        await this.sendVerificationEmail(newAccount.email, verificationToken)
+        this.sendVerificationEmail(newAccount.email, verificationToken);
 
         return { success: true }
       })
-
-      // .pipe(
-      //   map((user) => {
-      //     if(!_.isNil(user)) {
-      //         throw new BadRequestException('User already exists');
-      //     }
-      //   }),
-      //   switchMap(() => {
-      //     return this.hashPassword(newAccount.password);
-      //   }),
-      //   switchMap((hashedPassword) => {
-      //     const userInfo = {
-      //       email: newAccount.email,
-      //       password: hashedPassword
-      //     }
-
-      //     return this.accountModel.create(userInfo);
-      //   }),
-      //   map(() => ({ success: true }))
-      // )
   }
 
   /**
@@ -178,8 +158,14 @@ export class AuthService {
       });
   }
 
-  private sendVerificationEmail(email: string, verificationToken: string): Promise<void> {
-    console.log(email, verificationToken);
-    return firstValueFrom(this.mailClient.emit(config.rabbitMQ.mailer.messages.verifyAccount, { to: email, verificationToken }));
+  /**
+   * Method used to send a verification email.
+   * 
+   * @param {string} email email of the user to verify
+   * @param {string} verificationToken verification token.
+   * @returns {void} sends an email.
+   */
+  private sendVerificationEmail(email: string, verificationToken: string): void {
+    this.mailClient.emit(config.rabbitMQ.mailer.messages.verifyAccount, { to: email, verificationToken });
   }
 }

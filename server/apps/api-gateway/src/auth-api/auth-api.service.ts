@@ -44,7 +44,7 @@ export class AuthApiService {
    * Method used in order to send a whoami message to auth server.
    * 
    * @param {Token} token user access token.
-   * @returns 
+   * @returns {Observable<UserContextType>} user context.
    */
   whoami(token: Token): Observable<UserContextType> {
     return this.authServer.send(config.rabbitMQ.auth.messages.validateToken, token);

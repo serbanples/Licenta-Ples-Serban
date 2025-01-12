@@ -5,6 +5,9 @@ import { LoggerModule } from '@app/logger';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { config } from '@app/config';
 
+/* eslint-disable @typescript-eslint/no-extraneous-class */
+
+/** Mail Module class used to register needed dependencies */
 @Module({
   imports: [
     LoggerModule.forRoot('Mailer Service'),

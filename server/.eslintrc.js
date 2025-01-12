@@ -60,7 +60,7 @@ module.exports = {
     'no-console': 'warn',
     'eqeqeq': ['error', 'always'],
     'no-return-await': 'error',
-    'require-await': 'error',
+    // 'require-await': 'error',
     'no-var': 'error',
     'prefer-const': 'error',
     'curly': ['error', 'all'],
