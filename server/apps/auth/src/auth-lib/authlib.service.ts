@@ -1,12 +1,13 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AccountModel } from './model/account.model';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
 import { AccountType } from './model/account.schema';
 import { config } from '@app/config';
 import { ClientProxy } from '@nestjs/microservices';
+import { randomUUID } from 'crypto';
 
 /**
  * Auth service class.
@@ -43,12 +44,11 @@ export class AuthService {
         if(!_.isNil(user)) {
           throw new BadRequestException('User already exists');
         }
-        return Promise.all([
-          this.hashPassword(newAccount.password),
-          this.generateVerificationToken(newAccount.email)
-        ]);
+        return this.hashPassword(newAccount.password);
       })
-      .then(async ([hashedPassword, verificationToken]) => {
+      .then(async (hashedPassword) => {
+        const verificationToken = this.generateVerificationToken();
+
         const user = {
           email: newAccount.email,
           password: hashedPassword,
@@ -58,7 +58,7 @@ export class AuthService {
         await this.accountModel.create(user);
         return verificationToken;
       })
-      .then(async (verificationToken) => {
+      .then((verificationToken) => {
         this.sendVerificationEmail(newAccount.email, verificationToken);
 
         return { success: true }
@@ -76,6 +76,9 @@ export class AuthService {
       .then((user) => {
         if(_.isNil(user)) {
           throw new NotFoundException('User not found!')
+        }
+        if(user.isVerified === false) {
+          throw new UnauthorizedException('Account is not verified!');
         }
         return this.compareHash(loginAccount.password, user.password)
           .then((passwordsEqual) => {
@@ -95,10 +98,27 @@ export class AuthService {
    * Method used to get user credentials from a token.
    * 
    * @param {Token} token user access token.
-   * @returns {Observable} user data.
+   * @returns {Promise<UserContextType>} user data.
    */
-  whoami(token: Token): Promise<UserContextType> {
+  async whoami(token: Token): Promise<UserContextType> {
     return this.verifyToken(token.accessToken);
+  }
+
+  /**
+   * Method used to register an account as verified.
+   * 
+   * @param {string} token verification token sent by the user. 
+   * @returns {Promise<AuthResponse>} true if success, error if not.
+   */
+  async verifyAccount(token: VerificationTokenDto): Promise<AuthResponse> {
+    return this.accountModel.updateOne({ accountVerificationToken: token.verificationToken }, { isVerified: true })
+      .then((account) => {
+        if(_.isNil(account)) {
+          throw new NotFoundException('Invalid verification token!')
+        }
+
+        return { success: true };
+      })
   }
 
   /**
@@ -137,8 +157,13 @@ export class AuthService {
     return this.jwtService.signAsync(payload);
   }
 
-  private generateVerificationToken(userEmail: string): Promise<string> {
-    return this.jwtService.signAsync({ email: userEmail });
+  /**
+   * Method used to generate a verification token.
+   * 
+   * @returns {string} random verification token.
+   */
+  private generateVerificationToken(): string {
+    return randomUUID().toString();
   }
 
   /**

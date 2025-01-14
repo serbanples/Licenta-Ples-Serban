@@ -9,10 +9,11 @@ export type configTypes = {
             readonly serviceName: string;
             readonly queueName: string;
             readonly messages: {
-                readonly generateToken: string,
-                readonly createAccount: string,
-                readonly validateToken: string,
-                readonly authorize: string,
+                readonly generateToken: string;
+                readonly createAccount: string;
+                readonly validateToken: string;
+                readonly authorize: string;
+                readonly verifyAccount: string;
             }
         };
         readonly mailer: {
@@ -31,5 +32,4 @@ export type configTypes = {
         readonly host: string;
         readonly port: number;
     }
-    readonly sendInBlue: string;
 }

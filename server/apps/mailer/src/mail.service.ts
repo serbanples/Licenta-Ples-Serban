@@ -1,5 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import * as handlebars from 'handlebars';
 
 /**
  * Mail Service class used to send emails.
@@ -25,16 +26,20 @@ export class MailService {
    * @returns {Promise<void>} sends an email.
    */
   async sendVerificationEmail(to: string, verificationToken: string): Promise<void> {
-    const verificationUrl = `http://localhost:3000/verify-account?token=${verificationToken}`;
+    const verificationUrl = `http://localhost:3000/verify-account?verificationToken=${verificationToken}`;
+    const html = '<h1>Welcome to Our Platform!</h1><p>To verify your account, click on the link below:</p><a href="{{verificationUrl}}">Verify Account</a><p>{{verificationToken}}</p>';
+
+    const template = handlebars.compile(html);
+    const replacements = {
+      verificationUrl,
+      verificationToken
+    }
 
     await this.mailer.sendMail({
-      from: 'auth@classcloud.com',
+      from: '"Auth" <auth@classcloud.com>',
       to,
       subject: 'Verify your account',
-      template: './templates/verification',
-      context: {
-        verificationUrl
-      }
+      html: template(replacements),
     })
   }
 

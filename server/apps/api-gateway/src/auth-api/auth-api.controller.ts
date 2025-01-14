@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthApiService } from './auth-api.service';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestWrapper, UserContextType } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, RequestWrapper, UserContextType, VerificationTokenDto } from '@app/shared';
 import { map, Observable } from 'rxjs';
 import { Response } from 'express';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -80,6 +80,18 @@ export class AuthApiController {
     }
 
     return request.user;
+  }
+
+  /**
+   * Method used to handle whoami requests.
+   * 
+   * @param {string} verificationToken account verification token.
+   * @returns {Observable<AuthResponse>} true if successful, error if not.
+   */
+  @HttpCode(HttpStatus.OK)
+  @Get('verify-account')
+  verifyAccount(@Query() verificationToken: VerificationTokenDto): Observable<AuthResponse> {
+    return this.service.verifyAccount(verificationToken);
   }
 
   /**

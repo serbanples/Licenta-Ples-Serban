@@ -14,7 +14,8 @@ export const config: configTypes = {
                 generateToken: 'auth_generate_token',
                 createAccount: 'auth_create_account',
                 validateToken: 'auth_validate_token',
-                authorize: 'authorize',
+                authorize: 'autz_authorize',
+                verifyAccount: 'auth_verify_account',
             }
         },
         mailer: {
@@ -33,5 +34,4 @@ export const config: configTypes = {
         host: 'localhost',
         port: 1025
     },
-    sendInBlue: '8tmwc3YIbR4kSDEr'
 }

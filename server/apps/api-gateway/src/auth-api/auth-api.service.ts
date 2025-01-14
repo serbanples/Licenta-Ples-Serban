@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
@@ -48,5 +48,15 @@ export class AuthApiService {
    */
   whoami(token: Token): Observable<UserContextType> {
     return this.authServer.send(config.rabbitMQ.auth.messages.validateToken, token);
+  }
+
+  /**
+   * Method used in order to send a verify token message to auth server.
+   * 
+   * @param {VerificationTokenDto} verificationToken user account verification token.
+   * @returns {Observable<AuthResponse>} response from auth server.
+   */
+  verifyAccount(verificationToken: VerificationTokenDto): Observable<AuthResponse> {
+    return this.authServer.send(config.rabbitMQ.auth.messages.verifyAccount, verificationToken);
   }
 }

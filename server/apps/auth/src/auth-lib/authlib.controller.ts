@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './authlib.service';
@@ -26,7 +26,7 @@ export class AuthController {
    * Method used to proccess create account messages
    * 
    * @param {NewAccountDto} newAccount registration data.
-   * @returns {Observable<AuthResponse>} registration response.
+   * @returns {Promise<AuthResponse>} registration response.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.createAccount)
   createAccount(@Payload() newAccount: NewAccountDto): Promise<AuthResponse> {
@@ -37,7 +37,7 @@ export class AuthController {
    * Method used to proccess generate token messages.
    * 
    * @param {LoginAccountDto} loginAccount login data.
-   * @returns {Observable<Token>} access token generated for the user.
+   * @returns {Promise<Token>} access token generated for the user.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.generateToken)
   generateToken(@Payload() loginAccount: LoginAccountDto): Promise<Token> {
@@ -48,10 +48,21 @@ export class AuthController {
    * Method used to proccess validate token messages
    * 
    * @param {Token} token user token.
-   * @returns {Observable<any>} user data extracted from token.
+   * @returns {Promise<UserContextType>} user data extracted from token.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.validateToken)
   validateToken(@Payload() token: Token): Promise<UserContextType> {
     return this.authService.whoami(token);
+  }
+
+  /**
+   * Method used to proccess verify account messages
+   * 
+   * @param {VerificationTokenDto} verificationToken verification token for user.
+   * @returns {Promise<AuthResponse>} verification response
+   */
+  @MessagePattern(config.rabbitMQ.auth.messages.verifyAccount)
+  verifyAccount(@Payload() verificationToken: VerificationTokenDto): Promise<AuthResponse> {
+    return this.authService.verifyAccount(verificationToken);
   }
 }

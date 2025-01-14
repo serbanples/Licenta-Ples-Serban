@@ -44,3 +44,12 @@ export class LoginAccountDto {
     @Matches(passwordValidation)
     password!: string;
 }
+
+/**
+ * Validator class used verify account request.
+ */
+export class VerificationTokenDto {
+    @IsString()
+    @IsNotEmpty()
+    verificationToken!: string;
+  }
