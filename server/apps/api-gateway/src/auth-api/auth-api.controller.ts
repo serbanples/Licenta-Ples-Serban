@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthApiService } from './auth-api.service';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestWrapper, UserContextType, VerificationTokenDto } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, RequestWrapper, ResetPasswordFormDto, UserContextType, VerificationTokenDto } from '@app/shared';
 import { map, Observable } from 'rxjs';
 import { Response } from 'express';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -92,6 +92,30 @@ export class AuthApiController {
   @Get('verify-account')
   verifyAccount(@Query() verificationToken: VerificationTokenDto): Observable<AuthResponse> {
     return this.service.verifyAccount(verificationToken);
+  }
+
+  /**
+   * Method used to handle request password reset requests.
+   * 
+   * @param {RequestResetPasswordDto} requestResetPassword reset password request request.
+   * @returns {Observable<AuthResponse>} true if successful, error if not.
+   */
+  @HttpCode(HttpStatus.OK)
+  @Post('request-reset-password')
+  requestResetPassword(@Body() requestResetPassword: RequestResetPasswordDto): Observable<AuthResponse> {
+    return this.service.requestResetPassword(requestResetPassword);
+  }
+
+  /**
+   * Method used to handle reset password requests.
+   * 
+   * @param {ResetPasswordFormDto} resetPasswordForm form to reset password
+   * @returns {Observable<AuthResponse>} true if successful, error if not.
+   */
+  @HttpCode(HttpStatus.OK)
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordForm: ResetPasswordFormDto): Observable<AuthResponse> {
+    return this.service.resetPassword(resetPasswordForm);
   }
 
   /**

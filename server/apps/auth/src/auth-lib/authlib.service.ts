@@ -3,7 +3,7 @@ import { AccountModel } from './model/account.model';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
 import { AccountType } from './model/account.schema';
 import { config } from '@app/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -122,6 +122,59 @@ export class AuthService {
   }
 
   /**
+   * Method used to request a password reset.
+   * 
+   * @param {RequestResetPasswordDto} form reset request form sent by user.
+   * @returns {Promise<AuthResponse>} true if success, error if not.
+   */
+  async requestResetPassword(form: RequestResetPasswordDto): Promise<AuthResponse> {
+    return this.accountModel.findOne({ email: form.email })
+      .then((account) => {
+        if(_.isNil(account)) {
+          throw new NotFoundException('User not found');
+        }
+
+        return this.generateVerificationToken();
+      })
+      .then((resetToken) => {
+        return this.accountModel.updateOne({ email: form.email }, { passwordResetToken: resetToken });
+      })
+      .then((updatedAccount) => {
+        if(_.isNil(updatedAccount)) {
+          throw new NotFoundException('User not found');
+        }
+        this.sendResetPasswordEmail(updatedAccount.email, updatedAccount.passwordResetToken);
+
+        return { success: true };
+      })
+  }
+
+  /**
+   * Method used to reset a user password.
+   * 
+   * @param {ResetPasswordFormDto} form reset password form with new password and reset token.
+   * @returns {Promise<AuthResponse>} true if success, error if not.
+   */
+  async resetPassword(form: ResetPasswordFormDto): Promise<AuthResponse> {
+    return this.accountModel.findOne({ passwordResetToken: form.resetToken })
+      .then(async (account) => {
+        if(_.isNil(account)) {
+          throw new NotFoundException('Account not found');
+        }
+        const hashedPassword = await this.hashPassword(form.password);
+
+        return this.accountModel.updateOne({ _id: account.id }, { password: hashedPassword })
+      })
+      .then((account) => {
+        if(_.isNil(account)) {
+          throw new NotFoundException('User not found');
+        }
+
+        return { success: true };
+      })
+  }
+
+  /**
    * Method used to hash passwords.
    * 
    * @param {string} password original password.
@@ -192,5 +245,16 @@ export class AuthService {
    */
   private sendVerificationEmail(email: string, verificationToken: string): void {
     this.mailClient.emit(config.rabbitMQ.mailer.messages.verifyAccount, { to: email, verificationToken });
+  }
+
+  /**
+   * Method used to send a reset password email.
+   * 
+   * @param {string} email email of the user to reset password for.
+   * @param {string} resetToken reset token.
+   * @returns {void} sends an email.
+   */
+  private sendResetPasswordEmail(email: string, resetToken: string): void {
+    this.mailClient.emit(config.rabbitMQ.mailer.messages.resetPassword, { to: email, resetToken });
   }
 }

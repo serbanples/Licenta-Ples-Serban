@@ -79,7 +79,7 @@ export class AccountModel {
      * @returns {Promise<AccountType | null>} updated account if the account exists, null if not.
      */
     async updateOne(filter: object, updateObject: Partial<AccountType>): Promise<AccountType | null> {
-        return this.Model.findOneAndUpdate(filter, updateObject).exec()
+        return this.Model.findOneAndUpdate(filter, updateObject, { new: true }).exec()
             .then((user) => _.isNil(user) ? null : user.toObject())
             .catch((error) => {
                 this.logger.error('Error while update one query', {

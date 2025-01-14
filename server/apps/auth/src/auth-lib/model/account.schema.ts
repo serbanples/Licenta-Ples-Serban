@@ -47,6 +47,9 @@ export class AccountType extends mongoose.Document {
 
     @Prop({ required: false })
     accountVerificationToken!: string;
+
+    @Prop({ required: false })
+    passwordResetToken!: string;
 }
 
 export const AccountSchema = SchemaFactory.createForClass(AccountType);

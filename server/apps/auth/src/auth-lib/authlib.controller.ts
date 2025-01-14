@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './authlib.service';
@@ -65,4 +65,27 @@ export class AuthController {
   verifyAccount(@Payload() verificationToken: VerificationTokenDto): Promise<AuthResponse> {
     return this.authService.verifyAccount(verificationToken);
   }
+
+  /**
+   * Method used to proccess reset password request messages
+   * 
+   * @param {RequestResetPasswordDto} resetPasswordRequestForm form to request a password reset for user.
+   * @returns {Promise<AuthResponse>} reset password request response
+   */
+  @MessagePattern(config.rabbitMQ.auth.messages.requestResetPassword)
+  requestResetPassword(@Payload() resetPasswordRequestForm: RequestResetPasswordDto): Promise<AuthResponse> {
+    return this.authService.requestResetPassword(resetPasswordRequestForm);
+  }
+
+  /**
+   * Method used to proccess reset password messages
+   * 
+   * @param {ResetPasswordFormDto} resetPasswordForm form to reset password for user.
+   * @returns {Promise<AuthResponse>} reset password response
+   */
+ @MessagePattern(config.rabbitMQ.auth.messages.resetPassword)
+ resetPassword(@Payload() resetPasswordForm: ResetPasswordFormDto): Promise<AuthResponse> {
+   return this.authService.resetPassword(resetPasswordForm);
+ }
+  
 }

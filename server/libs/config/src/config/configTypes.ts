@@ -14,6 +14,8 @@ export type configTypes = {
                 readonly validateToken: string;
                 readonly authorize: string;
                 readonly verifyAccount: string;
+                readonly resetPassword: string;
+                readonly requestResetPassword: string;
             }
         };
         readonly mailer: {
@@ -21,6 +23,7 @@ export type configTypes = {
             readonly queueName: string;
             readonly messages: {
                 readonly verifyAccount: string;
+                readonly resetPassword: string;
             }
         }
     }

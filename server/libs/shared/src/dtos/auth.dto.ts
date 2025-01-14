@@ -46,10 +46,39 @@ export class LoginAccountDto {
 }
 
 /**
- * Validator class used verify account request.
+ * Validator class used for verify account request.
  */
 export class VerificationTokenDto {
     @IsString()
     @IsNotEmpty()
     verificationToken!: string;
-  }
+}
+
+/**
+ * Validator class used for reset password request.
+ */
+export class RequestResetPasswordDto {
+    @IsEmail()
+    @IsString()
+    @IsNotEmpty()
+    email!: string;
+}
+
+/**
+ * Validator class used for reset password request.
+ */
+export class ResetPasswordFormDto {
+    @IsString()
+    @IsNotEmpty()
+    resetToken!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(passwordValidation, {message: 'Password needs to be stronger'})
+    password!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Match('password', { message: 'Passwords do not match!' })
+    confirmPassword!: string;
+}

@@ -16,13 +16,16 @@ export const config: configTypes = {
                 validateToken: 'auth_validate_token',
                 authorize: 'autz_authorize',
                 verifyAccount: 'auth_verify_account',
+                requestResetPassword: 'auth_request_password_reset',
+                resetPassword: 'auth_reset_password'
             }
         },
         mailer: {
             serviceName: 'MAIL_SERVICE',
             queueName: 'mail_queue',
             messages: {
-                verifyAccount: 'mailer_verify_account'
+                verifyAccount: 'mailer_verify_account',
+                resetPassword: 'mailer_reset_password'
             }
         }
     },
