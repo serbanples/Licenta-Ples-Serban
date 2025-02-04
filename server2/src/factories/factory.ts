@@ -1,0 +1,54 @@
+import * as mongoose from 'mongoose';
+import _ from "lodash";
+import { config } from '../config';
+import { ModelsInstance } from '../models/ModelsInstance';
+import { LogicInstance } from '../logic/LogicInstance';
+
+/** Factory class used to manage instance creation at application level */
+export class Factory {
+  private static _instance: Factory;
+  private static logic: LogicInstance;
+  private static models: ModelsInstance;
+  private static mongoose: mongoose.Mongoose;
+
+  private constructor() {
+      if (Factory._instance) throw new Error('Use Factory.getInstance() instead of new Factory()');
+
+      mongoose.set('strictQuery', false); // https://mongoosejs.com/docs/guide.html#strict
+      mongoose.connect(config.mongo, {}).then(() => console.log('Connected to mongoDb'));
+      (mongoose as any).Promise = Promise;
+      Factory.mongoose = mongoose;
+      Factory.models = new ModelsInstance(Factory.mongoose);
+
+      Factory.logic = new LogicInstance(Factory.models);
+      Factory._instance = this;
+  }
+
+  /**
+   * Method used to get a factory instance
+   * 
+   * @returns {Factory} factory instance
+   */
+  static getInstance(): Factory {
+      if(_.isNil(Factory._instance)) Factory._instance = new Factory();
+      return Factory._instance;
+  }
+
+  /**
+   * Method used to get bzl
+   * 
+   * @returns {LogicInstance} bzl
+   */
+  getLogic(): LogicInstance {
+      return Factory.logic;
+  }
+
+  /**
+   * Method used to get models
+   * 
+   * @returns {ModelsInstance} models
+   */
+  getModels(): ModelsInstance { 
+      return Factory.models; 
+  }
+}

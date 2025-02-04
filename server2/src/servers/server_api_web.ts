@@ -1,13 +1,12 @@
 import cookieParser from "cookie-parser";
 import express, { Application } from "express";
 import { config } from '../config';
-import * as Bluebird from 'bluebird';
-import path from 'path';
-import { FactoryApiWeb } from "../factories";
+import { createWebRoutes } from "../routes";
+import { IServer } from "./server_iface";
 
-export class Server {
+/** Class used for configuring and starting Api Server */
+export class Server implements IServer {
     private app: Application = express();
-    private factory: FactoryApiWeb = FactoryApiWeb.getInstance();
 
     constructor() {
         this.init();
@@ -22,7 +21,7 @@ export class Server {
     private init(): void {
         this.app.use(express.json());
         this.app.use(cookieParser());
-        this.app.use(this.factory.getRoutes().getRouter());
+        this.app.use(createWebRoutes());
 
         // this.app.use(express.static(path.join(__dirname, '../../frontend/dist')));
         // this.app.get('*', (req, res) => {

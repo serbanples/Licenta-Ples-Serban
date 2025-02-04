@@ -1,6 +1,9 @@
+import { LoginForm, RegisterForm, Token } from "../../types";
+
+/** Interface shared by auth client and server */
 export interface IAuthRpc {
-  login(): Promise<any>;
+  login(loginForm: LoginForm): Promise<Token>;
   logout(): Promise<any>;
-  register(): Promise<any>;
-  validateToken(): Promise<any>;
+  register(registerForm: RegisterForm): Promise<boolean>;
+  validateToken(token: Token): Promise<any>;
 }

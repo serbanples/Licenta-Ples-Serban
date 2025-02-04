@@ -6,29 +6,23 @@
 // import * as Bluebird from 'bluebird';
 // import path from 'path';
 
+import { Factory } from "../factories/factory";
 import { AuthServer } from "../rpc/servers/AuthServer";
+import { IServer } from "./server_iface";
 
-export class Server {
-    // private app: Application = express();
-    // private factory: Factory = Factory.getInstance();
+/**
+ * Server class used for starting the auth server.
+ */
+export class Server implements IServer {
     private authServer: AuthServer = new AuthServer();
+    private factory: Factory = Factory.getInstance();
 
     constructor() {
-        this.init();
         this.start();
     }
 
     /**
-     * Method used to initiate the express application
-     * 
-     * @returns {void} initiaites the express application
-     */
-    private init(): void {
-        
-    }
-
-    /**
-     * Method used to start the exress app
+     * Method used to start the auth server
      * 
      * @returns {void} starts the server
      */

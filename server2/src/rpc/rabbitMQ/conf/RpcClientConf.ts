@@ -3,7 +3,9 @@ import EventEmitter from 'events';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../../config';
+import { MessageType } from '../types';
 
+/** RPC CLIENT CONFIGURATION class used to manage connection to rabbit mq */
 export class RpcClientConf {
   private connection: mq.Connection | null = null;
   private channel: mq.Channel | null = null;
@@ -14,6 +16,11 @@ export class RpcClientConf {
 
   constructor() {}
 
+  /**
+   * Method used to connect to a channel.
+   * 
+   * @returns {Promise<void>} connects to channel.
+   */
   async connect(): Promise<void> {
     try {
       this.connection = await mq.connect(this.mq_uri);
@@ -44,7 +51,15 @@ export class RpcClientConf {
     }
   }
 
-  async call(queue: string, message: any, timeout: number = 30000): Promise<any> {
+  /**
+   * Method used to call a method on remote server.
+   * 
+   * @param {string} queue queue name to send message to
+   * @param {MessageType} message message to send including method called and data.
+   * @param {number} timeout timeout before ending the call (default 30 sec)
+   * @returns {Promise<any>} response from server.
+   */
+  async call(queue: string, message: MessageType, timeout: number = 30000): Promise<any> {
     if (_.isNil(this.connected) || _.isNil(this.channel)) {
       throw new Error('Not connected to RabbitMQ');
     }
@@ -60,6 +75,7 @@ export class RpcClientConf {
 
       // Setup response listener
       this.responseEmitter.once(correlationId, (response: { data: any }) => {
+        console.log('data', response);
         clearTimeout(timeoutId);
         if (response.data.error) {
           reject(new Error(response.data.error));
@@ -76,7 +92,14 @@ export class RpcClientConf {
     });
   }
 
-  async emit(queue: string, message: any): Promise<void> {
+  /**
+   * Method used to emit a message to a method on remote server.
+   * 
+   * @param {string} queue queue name to send message to
+   * @param {MessageType} message message to send including method called and data.
+   * @returns {Promise<void>} emits a message
+   */
+  async emit(queue: string, message: MessageType): Promise<void> {
     if (_.isNil(this.connected) || _.isNil(this.channel)) {
         throw new Error('Not connected to RabbitMQ');
     }
@@ -84,6 +107,11 @@ export class RpcClientConf {
     this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
   }
 
+  /**
+   * Method used to close connection.
+   * 
+   * @returns {Promise<void>} closes rabbit mq connection.
+   */
   async close(): Promise<void> {
     if (!_.isNil(this.channel)) {
       await this.channel.close();

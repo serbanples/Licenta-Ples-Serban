@@ -29,9 +29,11 @@ export class RpcServerConf {
     await this.channel.assertQueue(queue, { durable: false });
     
     await this.channel.consume(queue, async (msg: mq.Message | null) => {
+      console.log('message', msg)
       if (_.isNil(msg) || _.isNil(this.channel)) return;
       try {
         const content = JSON.parse(msg.content.toString());
+        console.log(content)
         const result = await handler(content);
 
         if (msg.properties.replyTo) {

@@ -1,10 +1,12 @@
 import { WebRpcClientsInstance } from "../../rpcClients/web/webRpcClientsInstance";
 import { AuthMiddleware } from "./lib/AuthMiddleware";
 
+/** Class used to manage all web api server middlewares */
 export class WebMiddlewareInstance {
   public authMiddleware: AuthMiddleware;
+  private clients: WebRpcClientsInstance = new WebRpcClientsInstance();
 
-  constructor(clients: WebRpcClientsInstance) {
-    this.authMiddleware = new AuthMiddleware(clients.authClient);
+  constructor() {
+    this.authMiddleware = new AuthMiddleware(this.clients.authClient);
   }
 }
