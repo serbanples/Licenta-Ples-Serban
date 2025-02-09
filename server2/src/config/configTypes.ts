@@ -9,4 +9,8 @@ export interface ConfigTypes {
   readonly mongo: string;
   readonly mongoQueryLimit: 500;
   readonly jwt_secret: string;
+  readonly smtp: {
+    readonly host: string;
+    readonly port: number;
+  }
 }

@@ -10,9 +10,13 @@ export class AccountModel extends AbstractModel<AccountModelType> {
         username: { type: String, required: true, unique: false },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true, select: false },
+        isVerified: { type: Boolean, default: false },
+        accessToken: { type: String, unique: true },
         createdAt: { type: Date },
         updatedAt: { type: Date },
-        role: { type: String, default: UserRoleEnum.USER }
+        role: { type: String, default: UserRoleEnum.USER },
+        accountVerificationToken: { type: String },
+        passwordResetToken: { type: String },
     };
 
     protected SchemaOptions: mongoose.SchemaOptions = {

@@ -29,11 +29,10 @@ export class RpcServerConf {
     await this.channel.assertQueue(queue, { durable: false });
     
     await this.channel.consume(queue, async (msg: mq.Message | null) => {
-      console.log('message', msg)
       if (_.isNil(msg) || _.isNil(this.channel)) return;
       try {
         const content = JSON.parse(msg.content.toString());
-        console.log(content)
+        
         const result = await handler(content);
 
         if (msg.properties.replyTo) {
@@ -44,11 +43,17 @@ export class RpcServerConf {
           );
         }
         this.channel.ack(msg);
-      } catch (error) {
+      } catch (error: any) {
         if (msg.properties.replyTo) {
           this.channel.sendToQueue(
             msg.properties.replyTo,
-            Buffer.from(JSON.stringify({ error: (error as Error).message })),
+            Buffer.from(JSON.stringify({
+              error: {
+                name: (error as Error).name,
+                message: (error as Error).message,
+                errors: error.errors || {},
+              }
+            })),
             { correlationId: msg.properties.correlationId }
           );
         }

@@ -11,4 +11,8 @@ export const config: ConfigTypes = {
   mongo: 'mongodb://localhost:27017/licenta',
   mongoQueryLimit: 500,
   jwt_secret: 'cheie_secreta_nebuna',
+  smtp: {
+    host: 'localhost',
+    port: 1025
+  }
 }

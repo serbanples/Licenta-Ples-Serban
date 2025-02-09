@@ -1,7 +1,8 @@
 import { Factory } from "../../factories/factory";
 import { AuthCore } from "../../logic/core/AuthCore";
-import { LoginForm, RegisterForm, Token } from "../../types";
+import { AuthResponse, LoginForm, RegisterForm, Token } from "../../types";
 import { IAuthRpc } from "../interfaces/IAuthRpc";
+import { validateRPC } from "../middlewares/validateRequest";
 import { RpcServer } from "../rabbitMQ/impl/RpcServer";
 
 /** Auth Server class used for listening to rabbit mq and processing data */
@@ -10,7 +11,7 @@ export class AuthServer extends RpcServer implements IAuthRpc {
 
   constructor() {
     super();
-    this.authCore = new AuthCore;
+    this.authCore = new AuthCore();
     this.registerMethods();
   }
 
@@ -29,7 +30,8 @@ export class AuthServer extends RpcServer implements IAuthRpc {
    * @returns {Token} jwt token
    */
   async login(loginForm: LoginForm): Promise<Token> {
-    return this.authCore.login(loginForm);
+    return validateRPC(LoginForm, loginForm)
+      .then((validatedForm) => this.authCore.login(validatedForm))
   }
 
   /**
@@ -38,8 +40,9 @@ export class AuthServer extends RpcServer implements IAuthRpc {
    * @param {RegisterForm} registerForm register user form.
    * @returns {boolean} success for registration.
    */
-  async register(registerForm: RegisterForm): Promise<boolean> {
-    return this.authCore.register(registerForm);
+  async register(registerForm: RegisterForm): Promise<AuthResponse> {
+    return validateRPC(RegisterForm, registerForm)
+      .then((validatedForm) => this.authCore.register(validatedForm))
   }
 
   /**

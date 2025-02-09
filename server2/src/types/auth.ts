@@ -43,6 +43,19 @@ export class RegisterForm {
   confirmPassword!: string;
 }
 
+/**
+ * Class used for validating verify account requests.
+ */
+export class VerifyAccountForm {
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+}
+
 export interface Token {
   token: string;
+}
+
+export type AuthResponse = {
+  success: boolean;
 }

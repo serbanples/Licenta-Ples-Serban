@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../../config';
 import { MessageType } from '../types';
+import { handleRpcError } from './errorHandler';
 
 /** RPC CLIENT CONFIGURATION class used to manage connection to rabbit mq */
 export class RpcClientConf {
@@ -78,7 +79,7 @@ export class RpcClientConf {
         console.log('data', response);
         clearTimeout(timeoutId);
         if (response.data.error) {
-          reject(new Error(response.data.error));
+          reject(handleRpcError(response.data.error));
         } else {
           resolve(response.data);
         }

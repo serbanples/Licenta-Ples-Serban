@@ -1,5 +1,5 @@
 import { Factory } from "../../factories/factory";
-import { LoginForm, RegisterForm, Token } from "../../types";
+import { AuthResponse, LoginForm, RegisterForm, Token } from "../../types";
 import { AuthLib } from "../lib/AuthLib";
 
 /** Class used by Auth Server to process auth requests. */
@@ -14,9 +14,8 @@ export class AuthCore {
    * @param {RegisterForm} registerForm registration form.
    * @returns {Promise<boolean>} true if user has been registered, error if not.
    */
-  async register(registerForm: RegisterForm): Promise<boolean> {
+  async register(registerForm: RegisterForm): Promise<AuthResponse> {
     return this.authLib.register(registerForm)
-      .then(() => true)
   }
 
   /**
