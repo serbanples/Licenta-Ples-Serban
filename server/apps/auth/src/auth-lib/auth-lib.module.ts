@@ -2,11 +2,9 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './authlib.controller';
 import { AuthService } from './authlib.service';
 import { JwtModule } from '@nestjs/jwt';
-import { MongooseModule } from '@nestjs/mongoose';
 import { config } from '@app/config';
-import { AccountSchema, AccountType } from './model/account.schema';
-import { AccountModel } from './model/account.model';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { DatabaseModule } from '@app/database';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 
@@ -19,8 +17,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       secret: 'super secret key',
       signOptions: { expiresIn: '24h'},
     }),
-    MongooseModule.forRoot(config.mongodb.auth_db_uri),
-    MongooseModule.forFeature([{ name: AccountType.name, schema: AccountSchema }]),
+    DatabaseModule,
     ClientsModule.register([
       {
         name: config.rabbitMQ.mailer.serviceName,
@@ -36,6 +33,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AccountModel],
+  providers: [AuthService],
 })
 export class AuthLibModule {}

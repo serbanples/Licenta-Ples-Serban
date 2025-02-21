@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
+import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, RpcErrorEncoder, Token, UserContextType, VerificationTokenDto } from '@app/shared';
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './authlib.service';
@@ -29,6 +29,7 @@ export class AuthController {
    * @returns {Promise<AuthResponse>} registration response.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.createAccount)
+  @RpcErrorEncoder()
   createAccount(@Payload() newAccount: NewAccountDto): Promise<AuthResponse> {
     return this.authService.createAccount(newAccount);
   }
@@ -40,6 +41,7 @@ export class AuthController {
    * @returns {Promise<Token>} access token generated for the user.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.generateToken)
+  @RpcErrorEncoder()
   generateToken(@Payload() loginAccount: LoginAccountDto): Promise<Token> {
     return this.authService.login(loginAccount);
   }
@@ -51,6 +53,7 @@ export class AuthController {
    * @returns {Promise<UserContextType>} user data extracted from token.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.validateToken)
+  @RpcErrorEncoder()
   validateToken(@Payload() token: Token): Promise<UserContextType> {
     return this.authService.whoami(token);
   }
@@ -62,6 +65,7 @@ export class AuthController {
    * @returns {Promise<AuthResponse>} verification response
    */
   @MessagePattern(config.rabbitMQ.auth.messages.verifyAccount)
+  @RpcErrorEncoder()
   verifyAccount(@Payload() verificationToken: VerificationTokenDto): Promise<AuthResponse> {
     return this.authService.verifyAccount(verificationToken);
   }
@@ -73,6 +77,7 @@ export class AuthController {
    * @returns {Promise<AuthResponse>} reset password request response
    */
   @MessagePattern(config.rabbitMQ.auth.messages.requestResetPassword)
+  @RpcErrorEncoder()
   requestResetPassword(@Payload() resetPasswordRequestForm: RequestResetPasswordDto): Promise<AuthResponse> {
     return this.authService.requestResetPassword(resetPasswordRequestForm);
   }
@@ -84,6 +89,7 @@ export class AuthController {
    * @returns {Promise<AuthResponse>} reset password response
    */
  @MessagePattern(config.rabbitMQ.auth.messages.resetPassword)
+ @RpcErrorEncoder()
  resetPassword(@Payload() resetPasswordForm: ResetPasswordFormDto): Promise<AuthResponse> {
    return this.authService.resetPassword(resetPasswordForm);
  }

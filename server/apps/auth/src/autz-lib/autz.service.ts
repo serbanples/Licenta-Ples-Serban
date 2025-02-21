@@ -39,37 +39,25 @@ export class AutzService {
    * @returns {boolean} true if user is authorized, false if not.
    */
   isAuthorized(role: UserRoleEnum, resource: string, action: string): boolean {
-    try {
-        if (!this.authConfig[role]) {
-            this.logAuthzCheck(role, resource, action, false, 'Role not found');
-            return false;
-        }
+      if (!this.authConfig[role]) {
+          this.logAuthzCheck(role, resource, action, false, 'Role not found');
+          return false;
+      }
 
-        if (!this.authConfig[role][resource]) {
-            this.logAuthzCheck(role, resource, action, false, 'Resource not found for role');
-            return false;
-        }
+      if (!this.authConfig[role][resource]) {
+          this.logAuthzCheck(role, resource, action, false, 'Resource not found for role');
+          return false;
+      }
 
-        if (typeof this.authConfig[role][resource][action] !== 'boolean') {
-            this.logAuthzCheck(role, resource, action, false, 'Action not found for resource');
-            return false;
-        }
+      if (typeof this.authConfig[role][resource][action] !== 'boolean') {
+          this.logAuthzCheck(role, resource, action, false, 'Action not found for resource');
+          return false;
+      }
 
-        const isAllowed = this.authConfig[role][resource][action];
-        this.logAuthzCheck(role, resource, action, isAllowed);
-        
-        return isAllowed;
-    } catch (error) {
-        this.logger.error('Authorization check failed', {
-            event: 'authorization_error',
-            role,
-            resource,
-            action,
-            error: (error as Error).message,
-            timestamp: new Date().toISOString()
-        });
-        throw error;
-    }
+      const isAllowed = this.authConfig[role][resource][action];
+      this.logAuthzCheck(role, resource, action, isAllowed);
+      
+      return isAllowed;
   }
 
   /**

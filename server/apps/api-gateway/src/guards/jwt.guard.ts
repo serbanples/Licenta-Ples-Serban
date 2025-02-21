@@ -1,28 +1,21 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { catchError, map, Observable } from 'rxjs';
 import * as _ from 'lodash';
-import { AuthApiService } from '../auth-api/auth-api.service';
 import { RequestWrapper } from '@app/shared';
+import { ClientProxy } from '@nestjs/microservices';
+import { config } from '@app/config';
 
 /**
  * Auth guard class used to authenticate users on protected routes.
  */
 @Injectable()
 export class JwtGuard implements CanActivate {
-  public readonly reflector: Reflector;
-  private readonly authApiService: AuthApiService;
-
   /**
    * Constructor method.
-   * 
-   * @param {Reflector} reflector reflector.
-   * @param {AuthApiService} service auth api service.
    */
-  constructor(reflector: Reflector, service: AuthApiService) {
-    this.reflector = reflector;
-    this.authApiService = service;
-  }
+  constructor(
+    @Inject(config.rabbitMQ.auth.serviceName) private readonly authClient: ClientProxy
+  ) {}
 
   /**
    * Method used to extract the cookies and validate the request.
@@ -34,20 +27,19 @@ export class JwtGuard implements CanActivate {
     const request: RequestWrapper = context.switchToHttp().getRequest();
     const token = this.extractToken(request);
 
-    if(_.isNil(token)) {
+    if (_.isNil(token)) {
       throw new UnauthorizedException('No token provided');
     }
 
-    return this.authApiService.whoami({ accessToken: token })
-      .pipe(
-        map((userContext) => {
-          request.user = userContext;
-          return true;
-        }),
-        catchError(() => {
-          throw new UnauthorizedException('Invalid token');
-        })
-      )
+    return this.authClient.send(config.rabbitMQ.auth.messages.validateToken, { accessToken: token }).pipe(
+      map((userContext) => {
+        request.user = userContext;
+        return true;
+      }),
+      catchError(() => {
+        throw new UnauthorizedException('Invalid token');
+      })
+    );
   }
 
   /**

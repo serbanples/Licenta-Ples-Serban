@@ -13,7 +13,6 @@ import { LoggerModule } from '@app/logger';
     AuthLibModule, 
     AutzLibModule,
     LoggerModule.forRoot('Auth Service'),
-    AuthModule,
   ],
   controllers: [],
   providers: [],

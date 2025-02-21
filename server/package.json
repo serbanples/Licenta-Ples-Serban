@@ -32,6 +32,7 @@
     "@nestjs/mongoose": "^10.1.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/serve-static": "^4.0.2",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",
     "@types/lodash": "^4.17.14",
@@ -103,7 +104,8 @@
     "moduleNameMapper": {
       "^@app/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
       "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1",
-      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1"
+      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
+      "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1"
     }
   }
 }

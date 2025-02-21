@@ -52,6 +52,16 @@ export class AuthApiController {
       );
   }
 
+  @Get('login/validation')
+  loginValidation() {
+    return this.service.extractValidationRules(LoginAccountDto);
+  }
+
+  @Get('register/validation')
+  registerValidation() {
+    return this.service.extractValidationRules(NewAccountDto);
+  }
+
   /**
    * Method used to handle logout requests.
    * 
@@ -89,7 +99,7 @@ export class AuthApiController {
    * @returns {Observable<AuthResponse>} true if successful, error if not.
    */
   @HttpCode(HttpStatus.OK)
-  @Get('verify-account')
+  @Get('verifyaccount')
   verifyAccount(@Query() verificationToken: VerificationTokenDto): Observable<AuthResponse> {
     return this.service.verifyAccount(verificationToken);
   }

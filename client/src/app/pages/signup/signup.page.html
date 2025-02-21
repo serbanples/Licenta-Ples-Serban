@@ -1,0 +1,48 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username" placeholder="Enter your password">
+        <mat-error *ngIf="signupForm.get('username')?.invalid && signupForm.get('username')?.touched">
+          Invalid username
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter your email">
+        <mat-error *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched">
+          Invalid email
+        </mat-error>
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="Enter your password">
+        <mat-error *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched">
+          Invalid password
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput type="password" formControlName="confirmPassword" placeholder="Enter your password">
+        <mat-error *ngIf="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched">
+            Passwords do not match.
+        </mat-error>
+    </mat-form-field>
+    
+    <button mat-raised-button color="primary" type="submit" [disabled]="signupForm.invalid">
+        Register
+    </button>
+
+     <!-- <mat-error *ngIf="loginForm.get('password')?.value?.match('^(?=.*[A-Z])') && loginForm.get('password')?.touched">At least one uppercase letter.</mat-error> -->
+<!-- <span class="block" [ngClass]="{'text-primary': passwordFormField?.value?.match('(?=.*[a-z])')}">At least one lowercase
+            letter.</span>
+<span class="block" [ngClass]="{'text-primary': passwordFormField?.value?.match('(.*[0-9].*)')}">At least one
+            digit.</span>
+<span class="block" [ngClass]="{'text-primary': passwordFormField?.value?.match('(?=.*[!@#$%^&*])')}">At least one
+            special
+            character.</span>
+<span class="block" [ngClass]="{'text-primary': passwordFormField?.value?.match('.{8,}')}">At least 8 characters
+            long.</span> -->
+</form>

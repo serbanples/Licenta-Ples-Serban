@@ -72,6 +72,33 @@
       "compilerOptions": {
         "tsConfigPath": "apps/mailer/tsconfig.app.json"
       }
+    },
+    "core": {
+      "type": "application",
+      "root": "apps/core",
+      "entryFile": "main",
+      "sourceRoot": "apps/core/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/core/tsconfig.app.json"
+      }
+    },
+    "minio": {
+      "type": "application",
+      "root": "apps/minio",
+      "entryFile": "main",
+      "sourceRoot": "apps/minio/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/minio/tsconfig.app.json"
+      }
+    },
+    "database": {
+      "type": "library",
+      "root": "libs/database",
+      "entryFile": "index",
+      "sourceRoot": "libs/database/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/database/tsconfig.lib.json"
+      }
     }
   }
 }

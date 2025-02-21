@@ -1,13 +1,13 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { AccountModel } from './model/account.model';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
-import { AccountType } from './model/account.schema';
 import { config } from '@app/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { randomUUID } from 'crypto';
+import { AccountModel } from '@app/database/models/account.model';
+import { AccountType } from '@app/database/schema/account.schema';
 
 /**
  * Auth service class.
@@ -46,7 +46,7 @@ export class AuthService {
         }
         return this.hashPassword(newAccount.password);
       })
-      .then(async (hashedPassword) => {
+      .then((hashedPassword) => {
         const verificationToken = this.generateVerificationToken();
 
         const user = {
@@ -55,11 +55,10 @@ export class AuthService {
           accountVerificationToken: verificationToken
         }
 
-        await this.accountModel.create(user);
-        return verificationToken;
+        return this.accountModel.create(user);
       })
-      .then((verificationToken) => {
-        this.sendVerificationEmail(newAccount.email, verificationToken);
+      .then((account) => {
+        this.sendVerificationEmail(newAccount.email, account.accountVerificationToken);
 
         return { success: true }
       })
@@ -72,18 +71,19 @@ export class AuthService {
    * @returns {Promise<Token>} user access token.
    */
   async login(loginAccount: LoginAccountDto): Promise<Token> {
-    return this.accountModel.findOne({ email: loginAccount.email })
+    return this.accountModel.findOneWithPassword({ email: loginAccount.email })
       .then((user) => {
         if(_.isNil(user)) {
           throw new NotFoundException('User not found!')
-        }
-        if(user.isVerified === false) {
-          throw new UnauthorizedException('Account is not verified!');
         }
         return this.compareHash(loginAccount.password, user.password)
           .then((passwordsEqual) => {
             if(!passwordsEqual) {
               throw new BadRequestException('Incorrect password.');
+            }
+
+            if(user.isVerified === false) {
+              throw new UnauthorizedException('Account is not verified!');
             }
 
             return this.generateToken(user);
@@ -183,6 +183,7 @@ export class AuthService {
   private hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, this.SALT_ROUNDS);
   }
+
   /**
    * Method used to compare hashed passwords.
    * 
@@ -194,20 +195,18 @@ export class AuthService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  // private notifyDbAcc() {
-  /// emit event to db acc with user data in order to insert new user there.
-  // }
-
   /**
    * Method used to generate a jwt token.
    * 
    * @param {AccountType} userData user account data.
    * @returns {Promsie<string>} access token.
    */
-  private generateToken(userData: AccountType): Promise<string> {
+  private async generateToken(userData: AccountType): Promise<string> {
     const payload = { id: userData.id, email: userData.email, role: userData.role };
+    const accessToken = await this.jwtService.signAsync(payload);
 
-    return this.jwtService.signAsync(payload);
+    return this.accountModel.updateOne({ _id: userData.id }, { accessToken })
+      .then(user => user!.accessToken);
   }
 
   /**
@@ -223,17 +222,22 @@ export class AuthService {
    * Method used to validate a jwt token.
    * 
    * @param {string} token jwt token.
-   * @returns {Promise} user context.
+   * @returns {Promise<UserContextType>} user context.
    */
   private async verifyToken(token: string): Promise<UserContextType> {
     return this.jwtService.verifyAsync(token)
-      .then((decodedToken) => {
+      .then((decodedToken) => 
+        this.accountModel.findOne({ _id: decodedToken['id'], email: decodedToken['email'], role: decodedToken['role'], accessToken: token }))
+      .then(user => {
+        if(_.isNil(user)) {
+          throw new UnauthorizedException('Invalid user data!');
+        }
         return {
-          id: decodedToken['id'],
-          email: decodedToken['email'],
-          role: decodedToken['role']
-        };
-      });
+          id: user.id,
+          email: user.email,
+          role: user.role
+        }
+      })
   }
 
   /**

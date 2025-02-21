@@ -13,3 +13,28 @@ export type PopulateOpts = {
 export enum ModelNameEnum {
     USER = 'User',
 }
+
+export interface QueryPaginationFilter {
+    fromItem?: number;
+    pageSize?: number;
+    orderBy?: string;
+    orderDir?: 'asc' | 'desc';
+}
+
+export interface PaginationFilter {
+    fromItem: number;
+    pageSize: number;
+    orderBy: string;
+    orderDir: 'asc' | 'desc';
+}
+
+export interface ResourceWithPagination<T> {
+    result: T[];
+    pagination: {
+        fromItem: number;
+        perPage: number;
+        count: number;
+        totalPages: number;
+        totalCount: number;
+    }
+}

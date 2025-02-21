@@ -26,10 +26,19 @@ export type configTypes = {
                 readonly resetPassword: string;
             }
         }
+        readonly core: {
+            readonly serviceName: string;
+            readonly queueName: string;
+            readonly messages: {
+                readonly usersBrowse: string;
+                // readonly resetPassword: string;
+            }
+        }
     }
     readonly mongodb: {
         readonly auth_db_uri: string;
         readonly data_db_uri: string;
+        readonly query_limit: number;
     }
     readonly smtp: {
         readonly host: string;

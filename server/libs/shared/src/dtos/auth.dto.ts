@@ -21,7 +21,7 @@ export class NewAccountDto {
 
     @IsString()
     @IsNotEmpty()
-    @Matches(passwordValidation, {message: 'Password needs to be stronger'})
+    @Matches(passwordValidation, { message: 'Password needs to be stronger' })
     password!: string;
 
     @IsString()
@@ -41,7 +41,7 @@ export class LoginAccountDto {
 
     @IsString()
     @IsNotEmpty()
-    @Matches(passwordValidation)
+    @Matches(passwordValidation, { message: 'Invalid password' })
     password!: string;
 }
 
