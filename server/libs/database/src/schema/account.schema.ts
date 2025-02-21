@@ -1,7 +1,7 @@
 import { UserRoleEnum } from "@app/shared";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
 import * as _ from 'lodash';
+import { BaseSchema } from "./base.schema";
 
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 
@@ -32,7 +32,7 @@ import * as _ from 'lodash';
         }
     }
 })
-export class AccountType extends mongoose.Document {
+export class AccountType extends BaseSchema {
     @Prop({ required: true, unique: true, type: String })
     email!: string;
 
@@ -48,8 +48,14 @@ export class AccountType extends mongoose.Document {
     @Prop({ required: false })
     accountVerificationToken!: string;
 
+    @Prop({  })
+    verificationTokenExipration!: number;
+
     @Prop({ required: false })
     passwordResetToken!: string;
+
+    @Prop({ })
+    resetTokenExpiration!: number;
 
     @Prop({ type: String })
     accessToken!: string;

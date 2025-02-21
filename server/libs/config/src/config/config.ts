@@ -45,4 +45,5 @@ export const config: configTypes = {
     host: 'localhost',
     port: 1025
   },
+  tokenExpiration: 10 * 60 * 1000 //10 minutes, used for reset and verify token.
 }

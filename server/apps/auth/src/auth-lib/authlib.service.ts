@@ -49,10 +49,11 @@ export class AuthService {
       .then((hashedPassword) => {
         const verificationToken = this.generateVerificationToken();
 
-        const user = {
+        const user: Partial<AccountType> = {
           email: newAccount.email,
           password: hashedPassword,
-          accountVerificationToken: verificationToken
+          accountVerificationToken: verificationToken,
+          verificationTokenExipration: Date.now() + config.tokenExpiration,
         }
 
         return this.accountModel.create(user);
@@ -111,7 +112,16 @@ export class AuthService {
    * @returns {Promise<AuthResponse>} true if success, error if not.
    */
   async verifyAccount(token: VerificationTokenDto): Promise<AuthResponse> {
-    return this.accountModel.updateOne({ accountVerificationToken: token.verificationToken }, { isVerified: true })
+    return this.accountModel.findOne({ accountVerificationToken: token.verificationToken })
+      .then((account) => {
+        if(_.isNil(account)) {
+          throw new NotFoundException('Invalid verification token!');
+        }
+        if(account.verificationTokenExipration > Date.now()) {
+          throw new BadRequestException('Token expired!');
+        }
+        return this.accountModel.updateOne({ accountVerificationToken: token.verificationToken }, { isVerified: true })        
+      })
       .then((account) => {
         if(_.isNil(account)) {
           throw new NotFoundException('Invalid verification token!')
@@ -137,7 +147,8 @@ export class AuthService {
         return this.generateVerificationToken();
       })
       .then((resetToken) => {
-        return this.accountModel.updateOne({ email: form.email }, { passwordResetToken: resetToken });
+        const resetTokenExpiration = Date.now() + config.tokenExpiration;
+        return this.accountModel.updateOne({ email: form.email }, { passwordResetToken: resetToken, resetTokenExpiration });
       })
       .then((updatedAccount) => {
         if(_.isNil(updatedAccount)) {
@@ -161,8 +172,11 @@ export class AuthService {
         if(_.isNil(account)) {
           throw new NotFoundException('Account not found');
         }
-        const hashedPassword = await this.hashPassword(form.password);
+        if(account.resetTokenExpiration > Date.now()) {
+          throw new BadRequestException('Token expired');
+        }
 
+        const hashedPassword = await this.hashPassword(form.password);
         return this.accountModel.updateOne({ _id: account.id }, { password: hashedPassword })
       })
       .then((account) => {

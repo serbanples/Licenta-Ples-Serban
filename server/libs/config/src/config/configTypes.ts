@@ -43,5 +43,6 @@ export type configTypes = {
     readonly smtp: {
         readonly host: string;
         readonly port: number;
-    }
+    },
+    readonly tokenExpiration: number;
 }
