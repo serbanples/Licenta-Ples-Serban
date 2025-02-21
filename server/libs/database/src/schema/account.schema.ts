@@ -9,58 +9,59 @@ import { BaseSchema } from "./base.schema";
  * Class used to define the user schema.
  */
 @Schema({
-    timestamps: true,
-    collection: 'accounts',
-    toJSON: {
-        virtuals: true,
-        transform: (__, ret) => {
-            if(!_.isNil(ret['_id'])) {
-                ret['_id'] = ret['_id'].toString();
-            }
-            delete ret['_id'];
-            delete ret['__v'];
-        }
-    },
-    toObject: {
-        virtuals: true,
-        transform: (__, ret) => {
-            if(!_.isNil(ret['_id'])) {
-                ret['_id'] = ret['_id'].toString();
-            }
-            delete ret['_id'];
-            delete ret['__v'];
-        }
+  timestamps: true,
+  collection: 'accounts',
+  toJSON: {
+    virtuals: true,
+    transform: (__, ret) => {
+      if (!_.isNil(ret['_id'])) {
+        ret['_id'] = ret['_id'].toString();
+      }
+      delete ret['_id'];
+      delete ret['__v'];
     }
+  },
+  toObject: {
+    virtuals: true,
+    transform: (__, ret) => {
+      if (!_.isNil(ret['_id'])) {
+        ret['_id'] = ret['_id'].toString();
+      }
+      delete ret['_id'];
+      delete ret['__v'];
+    }
+  }
 })
 export class AccountType extends BaseSchema {
-    @Prop({ required: true, unique: true, type: String })
-    email!: string;
+  @Prop({ required: true, unique: true, type: String })
+  email!: string;
 
-    @Prop({ required: true, select: false, type: String })
-    password!: string;
+  @Prop({ required: true, select: false, type: String })
+  password!: string;
 
-    @Prop({ required: true, enum: UserRoleEnum, default: UserRoleEnum.USER, type: String })
-    role!: UserRoleEnum;
+  @Prop({ required: true, type: String })
+  fullName!: string;
 
-    @Prop({ default: false, type: Boolean })
-    isVerified!: boolean;
+  @Prop({ required: true, enum: UserRoleEnum, default: UserRoleEnum.USER, type: String })
+  role!: UserRoleEnum;
 
-    @Prop({ required: false })
-    accountVerificationToken!: string;
+  @Prop({ default: false, type: Boolean })
+  isVerified!: boolean;
 
-    @Prop({  })
-    verificationTokenExipration!: number;
+  @Prop({ required: false })
+  accountVerificationToken!: string;
 
-    @Prop({ required: false })
-    passwordResetToken!: string;
+  @Prop({})
+  verificationTokenExipration!: number;
 
-    @Prop({ })
-    resetTokenExpiration!: number;
+  @Prop({ required: false })
+  passwordResetToken!: string;
 
-    @Prop({ type: String })
-    accessToken!: string;
+  @Prop({})
+  resetTokenExpiration!: number;
+
+  @Prop({ type: String })
+  accessToken!: string;
 }
 
 export const AccountSchema = SchemaFactory.createForClass(AccountType);
-
-AccountSchema.index({ email: 1 });

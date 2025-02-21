@@ -16,6 +16,7 @@ export type configTypes = {
                 readonly verifyAccount: string;
                 readonly resetPassword: string;
                 readonly requestResetPassword: string;
+                readonly deleteAccount: string;
             }
         };
         readonly mailer: {
@@ -31,7 +32,9 @@ export type configTypes = {
             readonly queueName: string;
             readonly messages: {
                 readonly usersBrowse: string;
-                // readonly resetPassword: string;
+                readonly usersCreate: string;
+                readonly usersUpdate: string;
+                readonly usersDelete: string;
             }
         }
     }

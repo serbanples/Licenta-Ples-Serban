@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
+import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto, WithContext, AccountDeleteType } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { validateSync, ValidationError } from 'class-validator';
@@ -25,9 +25,9 @@ export class AuthApiService {
    * Method used in order to send a register message to auth server.
    * 
    * @param {NewAccountDto} requestData register form.
-   * @returns {Observable<AuthResponse>} response from auth server.
+   * @returns {Observable<SuccessResponse>} response from auth server.
    */
-  register(requestData: NewAccountDto): Observable<AuthResponse> {
+  register(requestData: NewAccountDto): Observable<SuccessResponse> {
     return this.authServer.send(config.rabbitMQ.auth.messages.createAccount, requestData);
   }
 
@@ -55,9 +55,9 @@ export class AuthApiService {
    * Method used in order to send a verify account message to auth server.
    * 
    * @param {VerificationTokenDto} verificationToken user account verification token.
-   * @returns {Observable<AuthResponse>} response from auth server.
+   * @returns {Observable<SuccessResponse>} response from auth server.
    */
-  verifyAccount(verificationToken: VerificationTokenDto): Observable<AuthResponse> {
+  verifyAccount(verificationToken: VerificationTokenDto): Observable<SuccessResponse> {
     return this.authServer.send(config.rabbitMQ.auth.messages.verifyAccount, verificationToken);
   }
 
@@ -65,9 +65,9 @@ export class AuthApiService {
    * Method used in order to send a reset password request message to auth server.
    * 
    * @param {RequestResetPasswordDto} resetPasswordRequestForm user reset password request form.
-   * @returns {Observable<AuthResponse>} response from auth server.
+   * @returns {Observable<SuccessResponse>} response from auth server.
    */
-  requestResetPassword(resetPasswordRequestForm: RequestResetPasswordDto): Observable<AuthResponse> {
+  requestResetPassword(resetPasswordRequestForm: RequestResetPasswordDto): Observable<SuccessResponse> {
     return this.authServer.send(config.rabbitMQ.auth.messages.requestResetPassword, resetPasswordRequestForm);
   }
 
@@ -75,10 +75,21 @@ export class AuthApiService {
    * Method used in order to send a reset password message to auth server.
    * 
    * @param {ResetPasswordFormDto} resetPasswordForm user reset password form.
-   * @returns {Observable<AuthResponse>} response from auth server.
+   * @returns {Observable<SuccessResponse>} response from auth server.
    */
-  resetPassword(resetPasswordForm: ResetPasswordFormDto): Observable<AuthResponse> {
+  resetPassword(resetPasswordForm: ResetPasswordFormDto): Observable<SuccessResponse> {
     return this.authServer.send(config.rabbitMQ.auth.messages.resetPassword, resetPasswordForm);
+  }
+
+  deleteAccount(userContext: UserContextType, id: string): Observable<SuccessResponse> {
+    const payload: WithContext<AccountDeleteType> = {
+      userContext,
+      data: {
+        id
+      }
+    }
+
+    return this.authServer.send(config.rabbitMQ.auth.messages.deleteAccount, payload);
   }
 
   extractValidationRules(dto: any): Record<string, any> {

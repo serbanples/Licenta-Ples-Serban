@@ -17,7 +17,8 @@ export const config: configTypes = {
         authorize: 'autz_authorize',
         verifyAccount: 'auth_verify_account',
         requestResetPassword: 'auth_request_password_reset',
-        resetPassword: 'auth_reset_password'
+        resetPassword: 'auth_reset_password',
+        deleteAccount: 'auth_delete_account'
       }
     },
     mailer: {
@@ -32,7 +33,10 @@ export const config: configTypes = {
       serviceName: 'CORE_SERVICE',
       queueName: 'core_queue',
       messages: {
-        usersBrowse: "core_users_browse"
+        usersBrowse: "core_users_browse",
+        usersCreate: "core_users_create",
+        usersUpdate: "core_users_update",
+        usersDelete: "core_users_delete",
       }
     }
   },

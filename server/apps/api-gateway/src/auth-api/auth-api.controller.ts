@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthApiService } from './auth-api.service';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, RequestWrapper, ResetPasswordFormDto, UserContextType, VerificationTokenDto } from '@app/shared';
+import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, RequestWrapper, ResetPasswordFormDto, UserContextType, VerificationTokenDto } from '@app/shared';
 import { map, Observable } from 'rxjs';
 import { Response } from 'express';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -26,10 +26,10 @@ export class AuthApiController {
    * Method used to handle register requests.
    * 
    * @param {NewAccountDto} registerData registration form.
-   * @returns {Observable<AuthResponse>} register response.
+   * @returns {Observable<SuccessResponse>} register response.
    */
   @Post('register')
-  register(@Body() registerData: NewAccountDto): Observable<AuthResponse> {
+  register(@Body() registerData: NewAccountDto): Observable<SuccessResponse> {
     return this.service.register(registerData);
   }
 
@@ -38,11 +38,11 @@ export class AuthApiController {
    * 
    * @param {LoginAccountDto} loginData login form.
    * @param {Response} response response object.
-   * @returns {Observable<AuthResponse>} login response.
+   * @returns {Observable<SuccessResponse>} login response.
    */
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(@Body() loginData: LoginAccountDto, @Res({ passthrough: true }) response: Response): Observable<AuthResponse> {
+  login(@Body() loginData: LoginAccountDto, @Res({ passthrough: true }) response: Response): Observable<SuccessResponse> {
     return this.service.login(loginData)
       .pipe(
         map((token) => {
@@ -66,11 +66,11 @@ export class AuthApiController {
    * Method used to handle logout requests.
    * 
    * @param {Response} response response object.
-   * @returns {AuthResponse} logout response.
+   * @returns {SuccessResponse} logout response.
    */
   @HttpCode(HttpStatus.OK)
   @Post('logout')
-  logout(@Res({ passthrough: true }) response: Response): AuthResponse {
+  logout(@Res({ passthrough: true }) response: Response): SuccessResponse {
     this.clearCookie(response);
     return { success: true }
   }
@@ -96,11 +96,11 @@ export class AuthApiController {
    * Method used to handle whoami requests.
    * 
    * @param {string} verificationToken account verification token.
-   * @returns {Observable<AuthResponse>} true if successful, error if not.
+   * @returns {Observable<SuccessResponse>} true if successful, error if not.
    */
   @HttpCode(HttpStatus.OK)
   @Get('verifyaccount')
-  verifyAccount(@Query() verificationToken: VerificationTokenDto): Observable<AuthResponse> {
+  verifyAccount(@Query() verificationToken: VerificationTokenDto): Observable<SuccessResponse> {
     return this.service.verifyAccount(verificationToken);
   }
 
@@ -108,11 +108,11 @@ export class AuthApiController {
    * Method used to handle request password reset requests.
    * 
    * @param {RequestResetPasswordDto} requestResetPassword reset password request request.
-   * @returns {Observable<AuthResponse>} true if successful, error if not.
+   * @returns {Observable<SuccessResponse>} true if successful, error if not.
    */
   @HttpCode(HttpStatus.OK)
   @Post('request-reset-password')
-  requestResetPassword(@Body() requestResetPassword: RequestResetPasswordDto): Observable<AuthResponse> {
+  requestResetPassword(@Body() requestResetPassword: RequestResetPasswordDto): Observable<SuccessResponse> {
     return this.service.requestResetPassword(requestResetPassword);
   }
 
@@ -120,12 +120,18 @@ export class AuthApiController {
    * Method used to handle reset password requests.
    * 
    * @param {ResetPasswordFormDto} resetPasswordForm form to reset password
-   * @returns {Observable<AuthResponse>} true if successful, error if not.
+   * @returns {Observable<SuccessResponse>} true if successful, error if not.
    */
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  resetPassword(@Body() resetPasswordForm: ResetPasswordFormDto): Observable<AuthResponse> {
+  resetPassword(@Body() resetPasswordForm: ResetPasswordFormDto): Observable<SuccessResponse> {
     return this.service.resetPassword(resetPasswordForm);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('delete-account')
+  deleteAccount(@Req() req: RequestWrapper, @Query() id: string): Observable<SuccessResponse> {
+    return this.service.deleteAccount(req.user!, id);
   }
 
   /**

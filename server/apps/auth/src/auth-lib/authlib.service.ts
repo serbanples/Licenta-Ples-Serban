@@ -1,8 +1,8 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as _ from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto } from '@app/shared';
+import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto, WithContext, UserCreateType, UserRoleEnum, UserDeleteType } from '@app/shared';
 import { config } from '@app/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { randomUUID } from 'crypto';
@@ -17,6 +17,7 @@ export class AuthService {
   private readonly accountModel: AccountModel;
   private readonly jwtService: JwtService;
   private readonly mailClient: ClientProxy;
+  private readonly coreClient: ClientProxy;
   private readonly SALT_ROUNDS = 10;
 
   /**
@@ -26,19 +27,25 @@ export class AuthService {
    * @param {JwtService} jwtService jwt service instance used to sign and validate tokens.
    * @param {ClientProxy} mailer proxy to mailer microservice.
    */
-  constructor(model: AccountModel, jwtService: JwtService, @Inject(config.rabbitMQ.mailer.serviceName) mailer: ClientProxy) {
+  constructor(
+    model: AccountModel, 
+    jwtService: JwtService, 
+    @Inject(config.rabbitMQ.mailer.serviceName) mailer: ClientProxy,
+    @Inject(config.rabbitMQ.core.serviceName) core: ClientProxy
+  ) {
     this.accountModel = model;
     this.jwtService = jwtService;
     this.mailClient = mailer;
+    this.coreClient = core;
   }
 
   /**
    * Method used to create a new account.
    * 
    * @param {NewAccountDto} newAccount new account data.
-   * @returns {Promise<AuthResponse>} registration resoponse if successful.
+   * @returns {Promise<SuccessResponse>} registration resoponse if successful.
    */
-  async createAccount(newAccount: NewAccountDto): Promise<AuthResponse> {
+  async createAccount(newAccount: NewAccountDto): Promise<SuccessResponse> {
     return this.accountModel.findOne({ email: newAccount.email })
       .then((user) => {
         if(!_.isNil(user)) {
@@ -51,6 +58,7 @@ export class AuthService {
 
         const user: Partial<AccountType> = {
           email: newAccount.email,
+          fullName: newAccount.fullName,
           password: hashedPassword,
           accountVerificationToken: verificationToken,
           verificationTokenExipration: Date.now() + config.tokenExpiration,
@@ -60,6 +68,7 @@ export class AuthService {
       })
       .then((account) => {
         this.sendVerificationEmail(newAccount.email, account.accountVerificationToken);
+        this.sendUserCreatedEventToCore(account);
 
         return { success: true }
       })
@@ -109,9 +118,9 @@ export class AuthService {
    * Method used to register an account as verified.
    * 
    * @param {string} token verification token sent by the user. 
-   * @returns {Promise<AuthResponse>} true if success, error if not.
+   * @returns {Promise<SuccessResponse>} true if success, error if not.
    */
-  async verifyAccount(token: VerificationTokenDto): Promise<AuthResponse> {
+  async verifyAccount(token: VerificationTokenDto): Promise<SuccessResponse> {
     return this.accountModel.findOne({ accountVerificationToken: token.verificationToken })
       .then((account) => {
         if(_.isNil(account)) {
@@ -135,9 +144,9 @@ export class AuthService {
    * Method used to request a password reset.
    * 
    * @param {RequestResetPasswordDto} form reset request form sent by user.
-   * @returns {Promise<AuthResponse>} true if success, error if not.
+   * @returns {Promise<SuccessResponse>} true if success, error if not.
    */
-  async requestResetPassword(form: RequestResetPasswordDto): Promise<AuthResponse> {
+  async requestResetPassword(form: RequestResetPasswordDto): Promise<SuccessResponse> {
     return this.accountModel.findOne({ email: form.email })
       .then((account) => {
         if(_.isNil(account)) {
@@ -164,9 +173,9 @@ export class AuthService {
    * Method used to reset a user password.
    * 
    * @param {ResetPasswordFormDto} form reset password form with new password and reset token.
-   * @returns {Promise<AuthResponse>} true if success, error if not.
+   * @returns {Promise<SuccessResponse>} true if success, error if not.
    */
-  async resetPassword(form: ResetPasswordFormDto): Promise<AuthResponse> {
+  async resetPassword(form: ResetPasswordFormDto): Promise<SuccessResponse> {
     return this.accountModel.findOne({ passwordResetToken: form.resetToken })
       .then(async (account) => {
         if(_.isNil(account)) {
@@ -185,6 +194,28 @@ export class AuthService {
         }
 
         return { success: true };
+      })
+  }
+
+  async deleteAccount(userContext: UserContextType, id: string): Promise<SuccessResponse> {
+    if(userContext.role !== UserRoleEnum.MASTER && userContext.id !== id) {
+      throw new ForbiddenException('Cannot delete this account!');
+    }
+    return this.accountModel.findOne({ _id: id })
+      .then((account) => {
+        if(_.isNil(account)) {
+          throw new NotFoundException('Account not found!');
+        }
+
+        return this.accountModel.deleteOne({ _id: id })
+          .then((result) => {
+            if(result.acknowledged) {
+              this.sendUserDeletedEventToCore(account.email);
+              return { success: true };
+            }
+
+            return { success: false };
+          })
       })
   }
 
@@ -274,5 +305,35 @@ export class AuthService {
    */
   private sendResetPasswordEmail(email: string, resetToken: string): void {
     this.mailClient.emit(config.rabbitMQ.mailer.messages.resetPassword, { to: email, resetToken });
+  }
+
+  private sendUserCreatedEventToCore(accountData: AccountType): void {
+    const payload: WithContext<UserCreateType> = {
+      userContext: {
+        id: 'master',
+        email: 'master',
+        role: UserRoleEnum.MASTER
+      },
+      data: {
+        email: accountData.email,
+        fullName: accountData.fullName
+      }
+    }
+
+    this.coreClient.emit(config.rabbitMQ.core.messages.usersCreate, payload);
+  }
+
+  private sendUserDeletedEventToCore(accountEmail: string): void {
+    const payload: WithContext<UserDeleteType> = {
+      userContext: {
+        id: 'master',
+        email: 'master',
+        role: UserRoleEnum.MASTER
+      },
+      data: {
+        email: accountEmail,
+      }
+    }
+    this.coreClient.emit(config.rabbitMQ.core.messages.usersDelete, payload);
   }
 }

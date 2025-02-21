@@ -17,7 +17,7 @@ export class NewAccountDto {
 
     @IsString()
     @IsNotEmpty()
-    name!: string;
+    fullName!: string;
 
     @IsString()
     @IsNotEmpty()

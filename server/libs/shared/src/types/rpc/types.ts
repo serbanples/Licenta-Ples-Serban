@@ -5,3 +5,8 @@ export type AutzAuthorizedType = {
     resource: string,
     action: string,
 }
+
+export type WithContext<T> = {
+    userContext: UserContextType;
+    data: T
+}

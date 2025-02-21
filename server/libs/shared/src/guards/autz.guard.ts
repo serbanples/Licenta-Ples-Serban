@@ -31,8 +31,6 @@ export class AuthorizationGuard implements CanActivate {
         action: action || '',
     }
 
-    console.log('autz daa', autzData)
-
     try {
       const response: boolean = await lastValueFrom(
         this.authClient.send(config.rabbitMQ.auth.messages.authorize, autzData)

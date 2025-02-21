@@ -10,3 +10,8 @@ export interface UserContextType {
 export interface RequestWrapper extends Request {
     user?: UserContextType
 }
+
+
+export type SuccessResponse = {
+    success: boolean;
+  }

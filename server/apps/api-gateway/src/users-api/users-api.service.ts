@@ -1,7 +1,9 @@
 import { config } from '@app/config';
-import { UserContextType } from '@app/shared';
+import { UserType } from '@app/database/schema/user.schema';
+import { ResourceWithPagination, UserContextType, WithContext } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { UserBrowseFilter, UserUpdateType } from 'libs/shared/src/types/core/types';
 import { Observable } from 'rxjs';
 
 /**
@@ -20,12 +22,19 @@ export class UsersApiService {
     this.coreServer = coreServer;
   }
 
-  browse(userContext: UserContextType, browseFilter: any): Observable<any> {
-    const payload = {
-        userContext,
-        browseFilter
+  browse(userContext: UserContextType, browseFilter: UserBrowseFilter): Observable<ResourceWithPagination<UserType>> {
+    const payload: WithContext<UserBrowseFilter> = {
+      userContext,
+      data: browseFilter,
     }
     return this.coreServer.send(config.rabbitMQ.core.messages.usersBrowse, payload);
   }
 
+  update(userContext: UserContextType, updateBody: UserUpdateType): Observable<UserType> {
+    const payload: WithContext<UserUpdateType> = {
+      userContext,
+      data: updateBody
+    }
+    return this.coreServer.send(config.rabbitMQ.core.messages.usersUpdate, payload);
+  }
 }

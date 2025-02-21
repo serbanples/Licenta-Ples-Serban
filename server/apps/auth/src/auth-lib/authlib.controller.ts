@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { AuthResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, RpcErrorEncoder, Token, UserContextType, VerificationTokenDto } from '@app/shared';
+import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, RpcErrorEncoder, Token, UserContextType, VerificationTokenDto, Authorize, WithContext, AccountDeleteType } from '@app/shared';
 import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './authlib.service';
@@ -26,11 +26,11 @@ export class AuthController {
    * Method used to proccess create account messages
    * 
    * @param {NewAccountDto} newAccount registration data.
-   * @returns {Promise<AuthResponse>} registration response.
+   * @returns {Promise<SuccessResponse>} registration response.
    */
   @MessagePattern(config.rabbitMQ.auth.messages.createAccount)
   @RpcErrorEncoder()
-  createAccount(@Payload() newAccount: NewAccountDto): Promise<AuthResponse> {
+  createAccount(@Payload() newAccount: NewAccountDto): Promise<SuccessResponse> {
     return this.authService.createAccount(newAccount);
   }
 
@@ -62,11 +62,11 @@ export class AuthController {
    * Method used to proccess verify account messages
    * 
    * @param {VerificationTokenDto} verificationToken verification token for user.
-   * @returns {Promise<AuthResponse>} verification response
+   * @returns {Promise<SuccessResponse>} verification response
    */
   @MessagePattern(config.rabbitMQ.auth.messages.verifyAccount)
   @RpcErrorEncoder()
-  verifyAccount(@Payload() verificationToken: VerificationTokenDto): Promise<AuthResponse> {
+  verifyAccount(@Payload() verificationToken: VerificationTokenDto): Promise<SuccessResponse> {
     return this.authService.verifyAccount(verificationToken);
   }
 
@@ -74,11 +74,11 @@ export class AuthController {
    * Method used to proccess reset password request messages
    * 
    * @param {RequestResetPasswordDto} resetPasswordRequestForm form to request a password reset for user.
-   * @returns {Promise<AuthResponse>} reset password request response
+   * @returns {Promise<SuccessResponse>} reset password request response
    */
   @MessagePattern(config.rabbitMQ.auth.messages.requestResetPassword)
   @RpcErrorEncoder()
-  requestResetPassword(@Payload() resetPasswordRequestForm: RequestResetPasswordDto): Promise<AuthResponse> {
+  requestResetPassword(@Payload() resetPasswordRequestForm: RequestResetPasswordDto): Promise<SuccessResponse> {
     return this.authService.requestResetPassword(resetPasswordRequestForm);
   }
 
@@ -86,12 +86,18 @@ export class AuthController {
    * Method used to proccess reset password messages
    * 
    * @param {ResetPasswordFormDto} resetPasswordForm form to reset password for user.
-   * @returns {Promise<AuthResponse>} reset password response
+   * @returns {Promise<SuccessResponse>} reset password response
    */
  @MessagePattern(config.rabbitMQ.auth.messages.resetPassword)
  @RpcErrorEncoder()
- resetPassword(@Payload() resetPasswordForm: ResetPasswordFormDto): Promise<AuthResponse> {
+ resetPassword(@Payload() resetPasswordForm: ResetPasswordFormDto): Promise<SuccessResponse> {
    return this.authService.resetPassword(resetPasswordForm);
  }
-  
+
+ @MessagePattern(config.rabbitMQ.auth.messages.deleteAccount)
+ @Authorize('account:delete')
+ @RpcErrorEncoder()
+ deleteAccount(@Payload() data: WithContext<AccountDeleteType>): Promise<SuccessResponse> {
+  return this.authService.deleteAccount(data.userContext, data.data.id);
+ }
 }
