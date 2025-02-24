@@ -89,6 +89,7 @@ async findWithPagination(pagination: QueryPaginationFilter, query: object = {}, 
         .then(async ([count, result]) => { return UtilsService.toBoolean(populate) ? Promise.all([count, this.Model.populate(result, this.populateOptions)]) : Promise.all([count, result]); })
         .then(([count, response]) => {
             const totalPages = _.ceil(count / pageSize);
+            console.log('bubu', response)
             return {
                 result: response ?  _.map(response, r => r.toObject() as ModelType) : [],
                 pagination: {

@@ -126,7 +126,7 @@ export class AuthService {
         if(_.isNil(account)) {
           throw new NotFoundException('Invalid verification token!');
         }
-        if(account.verificationTokenExipration > Date.now()) {
+        if(account.verificationTokenExipration < Date.now()) {
           throw new BadRequestException('Token expired!');
         }
         return this.accountModel.updateOne({ accountVerificationToken: token.verificationToken }, { isVerified: true })        

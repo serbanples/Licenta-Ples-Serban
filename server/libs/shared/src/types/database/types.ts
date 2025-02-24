@@ -38,3 +38,15 @@ export interface ResourceWithPagination<T> {
         totalCount: number;
     }
 }
+
+export interface with_text {
+    text?: string;
+}
+
+export interface with_populate {
+    populate?: boolean;
+}
+
+export interface with_pagination {
+    pagination?: QueryPaginationFilter;
+}

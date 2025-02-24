@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 import { UsersApiService } from './users-api.service';
 import { JwtGuard } from '../guards/jwt.guard';
-import { UserBrowseFilter, UserUpdateType } from 'libs/shared/src/types/core/types';
+import { UserBrowseFilter, UserUpdateType } from 'libs/shared/src/types/core/user.types';
 import { UserType } from '@app/database/schema/user.schema';
 
 /**

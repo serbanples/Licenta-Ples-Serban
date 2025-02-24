@@ -5,20 +5,22 @@ import { ResourceWithPagination, RpcErrorEncoder, UserBrowseFilter, UserCreateTy
 import { Controller, UseInterceptors } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 import { Authorize } from "@app/shared";
+import { UserService } from "./users.service";
 
 @UseInterceptors(LoggingInterceptor)
 @Controller()
 export class UsersController {
+  private readonly userService: UserService;
+
+  constructor(service: UserService) {
+    this.userService = service;
+  }
+
   @MessagePattern(config.rabbitMQ.core.messages.usersBrowse)
   @Authorize("users:browse")
   @RpcErrorEncoder()
   browse(@Payload() data: WithContext<UserBrowseFilter>): Promise<ResourceWithPagination<UserType>> {
-    // const { userContext, filter } = data;
-
-    // some function calls;
-    console.log(data)
-
-    return null as unknown as Promise<ResourceWithPagination<UserType>>;
+    return this.userService.browse(data.userContext, data.data);
   }
 
   // action used by auth service when user registers
@@ -26,17 +28,14 @@ export class UsersController {
   @Authorize("users:create")
   @RpcErrorEncoder()
   create(@Payload() data: WithContext<UserCreateType>): void {
-    console.log(data);
-    // call service save method;
+    this.userService.create(data.userContext, data.data);
   }
 
   @MessagePattern(config.rabbitMQ.core.messages.usersUpdate)
   @Authorize("users:update")
   @RpcErrorEncoder()
   update(@Payload() data: WithContext<UserUpdateType>): Promise<UserType> {
-    console.log(data);
-
-    return null as unknown as Promise<UserType>
+    return this.userService.update(data.userContext, data.data);
   }
 
   // action used by auth service when user deletes account
@@ -44,8 +43,7 @@ export class UsersController {
   @Authorize("users:delete")
   @RpcErrorEncoder()
   delete(@Payload() data: WithContext<UserDeleteType>): void {
-    console.log(data)
-    // call service delete method
+    this.userService.delete(data.userContext, data.data);
   }
 
 }

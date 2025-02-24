@@ -3,7 +3,7 @@ import { UserType } from '@app/database/schema/user.schema';
 import { ResourceWithPagination, UserContextType, WithContext } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { UserBrowseFilter, UserUpdateType } from 'libs/shared/src/types/core/types';
+import { UserBrowseFilter, UserUpdateType } from 'libs/shared/src/types/core/user.types';
 import { Observable } from 'rxjs';
 
 /**
