@@ -1,0 +1,63 @@
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.password-visibility-button {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-visibility-button svg {
+    font-size: 1.2rem;
+}
+
+.password-input-container input {
+    padding-right: 40px;
+    /* Add padding to avoid overlapping with the button */
+    width: calc(100% - 40px);
+}
+
+.login-form {
+    margin: 10px;
+}
+
+.form-label {
+    position: absolute;
+    left: 0.5rem;
+    transition: transform 0.3s ease, font-size 0.3s ease;
+    pointer-events: none;
+}
+
+.form-group input:focus + .form-label,
+.form-group input:not(:placeholder-shown) + .form-label {
+    transform: translateY(-1.5rem); /* Move the label up */
+    font-size: 0.8rem; 
+}
+
+@keyframes label-float {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-1.5rem);
+    }
+}

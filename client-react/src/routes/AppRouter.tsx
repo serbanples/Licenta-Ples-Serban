@@ -1,11 +1,10 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { AuthLayout } from "../pages/loggedout/layout/AuthLayout";
-import { SignupPage } from "../pages/loggedout/signupPage/SignupPage";
-import { LoginPage } from "../pages/loggedout/loginPage/LoginPage";
+
+import { routes } from "./routeConfig";
+import { AuthLayout, LoginPage, SignupPage } from "../pages";
 
 import './App.css';
-import { routes } from "./routeConfig";
 
 export const AppRouter: React.FC = () => {
   return (
