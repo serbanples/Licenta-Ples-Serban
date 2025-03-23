@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { AuthModule } from './auth.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { NestFactory } from '@nestjs/core';
 import { config } from '@app/config';
 import { LoggerService } from '@app/logger';
+import { AuthModule } from './auth.module';
 
 /* eslint-disable no-console */
 

@@ -2,8 +2,7 @@ import _ from "lodash";
 import { DeleteResult } from "mongoose";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { IApi, ResourceWithPagination, UserBrowseFilter, UserContextType, UserCreateType, UserDeleteType, UserUpdateType } from "@app/shared";
-import { UserModel } from "@app/database/models/user.model";
-import { UserType } from "@app/database/schema/user.schema";
+import { UserModel, UserType } from "@app/database";
 
 @Injectable()
 export class UserService implements IApi<UserType> {

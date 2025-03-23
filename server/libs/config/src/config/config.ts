@@ -38,6 +38,13 @@ export const config: configTypes = {
         usersUpdate: "core_users_update",
         usersDelete: "core_users_delete",
       }
+    },
+    minio: {
+      serviceName: 'MINIO_SERVICE',
+      queueName: 'minio_queue',
+      messages: {
+
+      }
     }
   },
   mongodb: {
@@ -48,6 +55,15 @@ export const config: configTypes = {
   smtp: {
     host: 'localhost',
     port: 1025
+  },
+  minio: {
+    MINIO_ENDPOINT: 'localhost',
+    MINIO_PORT: 9000,
+    MINIO_USE_SSL: false,
+    MINIO_ACCESS_KEY: 'minio_access_key',
+    MINIO_SECRET_KEY: 'minio_secret_key',
+    MINIO_BUCKET_NAME: 'files',
+    MINIO_REGION: 'us-east-1',
   },
   tokenExpiration: 10 * 60 * 1000 //10 minutes, used for reset and verify token.
 }

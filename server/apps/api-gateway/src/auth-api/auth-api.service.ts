@@ -1,9 +1,9 @@
+import { Observable } from 'rxjs';
+import { validateSync, ValidationError } from 'class-validator';
+import { ClientProxy } from '@nestjs/microservices';
+import { Inject, Injectable } from '@nestjs/common';
 import { config } from '@app/config';
 import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto, WithContext, AccountDeleteType } from '@app/shared';
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { validateSync, ValidationError } from 'class-validator';
-import { Observable } from 'rxjs';
 
 /**
  * Auth api service class used to communicate with auth server.

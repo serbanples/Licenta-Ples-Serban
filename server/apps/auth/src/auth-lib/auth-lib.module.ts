@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
-import { AuthController } from './authlib.controller';
-import { AuthService } from './authlib.service';
 import { JwtModule } from '@nestjs/jwt';
-import { config } from '@app/config';
+import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DatabaseModule } from '@app/database';
+import { config } from '@app/config';
+import { AuthController } from './authlib.controller';
+import { AuthService } from './authlib.service';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 

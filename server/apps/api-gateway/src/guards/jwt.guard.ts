@@ -1,8 +1,8 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { catchError, map, Observable } from 'rxjs';
 import * as _ from 'lodash';
-import { RequestWrapper } from '@app/shared';
+import { catchError, map, Observable } from 'rxjs';
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { RequestWrapper } from '@app/shared';
 import { config } from '@app/config';
 
 /**

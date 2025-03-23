@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { ApiGatewayModule } from './api-gateway.module';
-import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { LoggerService } from '@app/logger';
+import { ApiGatewayModule } from './api-gateway.module';
 
 /* eslint-disable no-console */
 

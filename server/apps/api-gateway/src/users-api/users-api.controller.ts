@@ -1,11 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
-import { RequestWrapper, ResourceWithPagination } from '@app/shared';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { RequestWrapper, ResourceWithPagination, UserBrowseFilter, UserUpdateType } from '@app/shared';
 import { UsersApiService } from './users-api.service';
 import { JwtGuard } from '../guards/jwt.guard';
-import { UserBrowseFilter, UserUpdateType } from 'libs/shared/src/types/core/user.types';
-import { UserType } from '@app/database/schema/user.schema';
+import { UserType } from '@app/database';
 
 /**
  * Users api controller class used to handle user related requests.

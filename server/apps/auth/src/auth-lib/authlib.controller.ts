@@ -1,9 +1,9 @@
-import { config } from '@app/config';
-import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, RpcErrorEncoder, Token, UserContextType, VerificationTokenDto, Authorize, WithContext, AccountDeleteType } from '@app/shared';
-import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { AuthService } from './authlib.service';
+import { Controller, UseInterceptors } from '@nestjs/common';
+import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, RpcErrorEncoder, Token, UserContextType, VerificationTokenDto, Authorize, WithContext, AccountDeleteType } from '@app/shared';
 import { LoggingInterceptor } from '@app/logger';
+import { config } from '@app/config';
+import { AuthService } from './authlib.service';
 
 /**
  * Auth controller class used to handle incoming messages for authentication

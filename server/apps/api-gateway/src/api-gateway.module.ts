@@ -1,12 +1,12 @@
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerMiddleware, LoggerModule } from '@app/logger';
+import { config } from '@app/config';
 import { AuthApiModule } from './auth-api/auth-api.module';
 import { JwtGuard } from './guards/jwt.guard';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { UsersApiModule } from './users-api/users-api.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { config } from '@app/config';
 
 /**
  * Api gateway module class.
@@ -29,7 +29,7 @@ import { config } from '@app/config';
     LoggerModule.forRoot('Api Gateway'),
     AuthApiModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../../../', 'client/dist/client'),
+      rootPath: join(__dirname, '../../../../', 'client-react/dist'),
       exclude: ['/api*']
     }),
     UsersApiModule,

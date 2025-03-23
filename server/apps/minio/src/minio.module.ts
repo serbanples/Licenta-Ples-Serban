@@ -1,10 +1,11 @@
+import { LoggerModule } from '@app/logger';
 import { Module } from '@nestjs/common';
-import { MinioController } from './minio.controller';
-import { MinioService } from './minio.service';
 
 @Module({
-  imports: [],
-  controllers: [MinioController],
-  providers: [MinioService],
+  imports: [
+    LoggerModule.forRoot('Minio Service')
+  ],
+  controllers: [],
+  providers: [],
 })
 export class MinioModule {}

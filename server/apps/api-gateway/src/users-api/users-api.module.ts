@@ -1,6 +1,6 @@
-import { config } from '@app/config';
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { config } from '@app/config';
 import { UsersApiControler } from './users-api.controller';
 import { UsersApiService } from './users-api.service';
 

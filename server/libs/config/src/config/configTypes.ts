@@ -37,6 +37,13 @@ export type configTypes = {
                 readonly usersDelete: string;
             }
         }
+        readonly minio: {
+            readonly serviceName: string;
+            readonly queueName: string;
+            readonly messages: {
+                
+            }
+        }
     }
     readonly mongodb: {
         readonly auth_db_uri: string;
@@ -46,6 +53,15 @@ export type configTypes = {
     readonly smtp: {
         readonly host: string;
         readonly port: number;
+    },
+    readonly minio: {
+        readonly MINIO_ENDPOINT: string,
+        readonly MINIO_PORT: number
+        readonly MINIO_USE_SSL: boolean
+        readonly MINIO_ACCESS_KEY: string,
+        readonly MINIO_SECRET_KEY: string,
+        readonly MINIO_BUCKET_NAME: string,
+        readonly MINIO_REGION: string,
     },
     readonly tokenExpiration: number;
 }

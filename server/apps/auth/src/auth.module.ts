@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { LoggerModule } from '@app/logger';
 import { AuthLibModule } from './auth-lib/auth-lib.module';
 import { AutzLibModule } from './autz-lib/autz-lib.module';
-import { LoggerModule } from '@app/logger';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 

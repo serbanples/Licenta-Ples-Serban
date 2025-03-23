@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { CoreModule } from './core.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { config } from '@app/config';
 import { LoggerService } from '@app/logger';
+import { CoreModule } from './core.module';
 
 /* eslint-disable no-console */
 
@@ -37,6 +37,6 @@ bootstrap().catch((error) => {
     event: 'microservice_start_failed',
     error: (error as Error).message,
     timestamp: new Date().toISOString(),
-    service: 'AuthService'
+    service: 'CoreService'
   });
 });

@@ -1,10 +1,9 @@
-import { config } from "@app/config";
-import { UserType } from "@app/database/schema/user.schema";
-import { LoggingInterceptor } from "@app/logger";
-import { ResourceWithPagination, RpcErrorEncoder, UserBrowseFilter, UserCreateType, UserDeleteType, UserUpdateType, WithContext } from "@app/shared";
-import { Controller, UseInterceptors } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
-import { Authorize } from "@app/shared";
+import { Controller, UseInterceptors } from "@nestjs/common";
+import { config } from "@app/config";
+import { UserType } from "@app/database";
+import { LoggingInterceptor } from "@app/logger";
+import { Authorize, ResourceWithPagination, RpcErrorEncoder, UserBrowseFilter, UserCreateType, UserDeleteType, UserUpdateType, WithContext } from "@app/shared";
 import { UserService } from "./users.service";
 
 @UseInterceptors(LoggingInterceptor)

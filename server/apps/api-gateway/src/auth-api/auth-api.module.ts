@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AuthApiController } from './auth-api.controller';
-import { AuthApiService } from './auth-api.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { config } from '@app/config';
+import { AuthApiController } from './auth-api.controller';
+import { AuthApiService } from './auth-api.service';
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 

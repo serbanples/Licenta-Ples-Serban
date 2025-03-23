@@ -1,10 +1,10 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
-import { AuthApiService } from './auth-api.service';
-import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, RequestWrapper, ResetPasswordFormDto, UserContextType, VerificationTokenDto } from '@app/shared';
-import { map, Observable } from 'rxjs';
-import { Response } from 'express';
-import { JwtGuard } from '../guards/jwt.guard';
 import * as _ from 'lodash';
+import { Response } from 'express';
+import { map, Observable } from 'rxjs';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, RequestWrapper, ResetPasswordFormDto, UserContextType, VerificationTokenDto } from '@app/shared';
+import { JwtGuard } from '../guards/jwt.guard';
+import { AuthApiService } from './auth-api.service';
 
 /**
  * Auth api controller class used to handle authenticationr requests.

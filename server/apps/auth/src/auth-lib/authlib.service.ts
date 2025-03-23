@@ -1,13 +1,12 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import * as _ from 'lodash';
-import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ClientProxy } from '@nestjs/microservices';
 import { SuccessResponse, LoginAccountDto, NewAccountDto, RequestResetPasswordDto, ResetPasswordFormDto, Token, UserContextType, VerificationTokenDto, WithContext, UserCreateType, UserRoleEnum, UserDeleteType } from '@app/shared';
 import { config } from '@app/config';
-import { ClientProxy } from '@nestjs/microservices';
-import { randomUUID } from 'crypto';
-import { AccountModel } from '@app/database/models/account.model';
-import { AccountType } from '@app/database/schema/account.schema';
+import { AccountModel, AccountType } from '@app/database';
 
 /**
  * Auth service class.

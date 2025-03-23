@@ -1,9 +1,9 @@
 import { Controller, UseInterceptors } from '@nestjs/common';
-import { AutzService } from './autz.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AutzAuthorizedType, RpcErrorEncoder } from '@app/shared';
 import { config } from '@app/config';
 import { LoggingInterceptor } from '@app/logger';
+import { AutzService } from './autz.service';
 
 /** 
  * Authorization controller class.
